@@ -11,35 +11,53 @@ var store = new ExpressBrute.MemoryStore();
 var bruteforce = new ExpressBrute(store);
 
 //sign up
-router.post("/signup", async (req, res) =>{
+router.post("/signup", async (req, res) => {
     const namePattern = /^[a-zA-Z0-9]+$/; // Whitelists alphanumeric names
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum 8 characters, at least 1 letter and 1 number
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/; // Minimum 8 characters, one number, one special character, and one capital letter
 
     // Sanitize input to avoid XSS and NoSQL injection
-    const name = sanitize(req.body.name);
+    const fullName = sanitize(req.body.fullName);
+    const username = sanitize(req.body.username);
+    const idNumber = sanitize(req.body.idNumber);
+    const accountNumber = sanitize(req.body.accountNumber);
     const password = sanitize(req.body.password);
+    const confirmPassword = sanitize(req.body.confirmPassword);
 
-    if (!namePattern.test(name) || !passwordPattern.test(password)) {
-        return res.status(400).send("Invalid input data.");
+    // Input validation
+    if (!namePattern.test(username)) {
+        return res.status(400).send("Invalid username.");
+    }
+    if (!passwordPattern.test(password)) {
+        return res.status(400).send("Password must be at least 8 characters, include one number, one special character, and one capital letter.");
+    }
+    if (password !== confirmPassword) {
+        return res.status(400).send("Passwords do not match.");
     }
 
     try {
+        // Hash the password with salt
         const hashedPassword = await bcrypt.hash(password, 12);
-        let newDocument = {
-            name,
-            password: hashedPassword,
+
+        // Prepare new user document
+        let newUser = {
+            fullName,
+            username,
+            idNumber,
+            accountNumber,
+            password: hashedPassword
         };
 
+        // Insert the new user into the database
         const collection = await db.collection("users");
-        const result = await collection.insertOne(newDocument);
-        res.status(201).json({ message: "User created successfully." });
-        console.log(password);
-        res.send(result).status(204);
+        const result = await collection.insertOne(newUser);
+        
+        res.status(201).json({ message: "User registered successfully." });
     } catch (error) {
         console.error("Signup error:", error);
         res.status(500).json({ message: "Signup failed." });
     }
 });
+
 
 
 // Login

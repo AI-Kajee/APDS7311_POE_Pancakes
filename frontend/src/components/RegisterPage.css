@@ -110,6 +110,14 @@ h3 {
   margin-bottom: 20px;
 }
 
+.valid {
+  color: green;
+}
+
+.invalid {
+  color: red;
+}
+
 @media screen and (max-width: 768px) {
   .form-content {
     flex-direction: column;
