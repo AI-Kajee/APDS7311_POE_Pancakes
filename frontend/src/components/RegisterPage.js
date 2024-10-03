@@ -54,22 +54,26 @@ function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) {
       return;
     }
-
+  
     try {
       const response = await fetch('/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
+  
+      const data = await response.json();
+  
       if (response.ok) {
         console.log('User registered successfully');
+        // Redirect user to login page upon successful registration
+        window.location.href = "/login"; // Assuming you have a route for login
       } else {
-        console.log('Failed to register user');
+        console.error('Failed to register user:', data.message);
       }
     } catch (error) {
       console.error('Error during registration:', error);

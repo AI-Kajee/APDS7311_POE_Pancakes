@@ -39,26 +39,24 @@ function LoginPage() {
     if (!validateForm()) {
       return; // Stop the submission if validation fails
     }
-
+  
     try {
       const response = await fetch('/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
+  
+      const data = await response.json();
+  
       if (response.ok) {
-        const data = await response.json();
         console.log('Login successful:', data);
-
-        // Store token and handle login success (e.g., redirect or show dashboard)
+  
+        // Store the token in local storage and redirect to dashboard
         localStorage.setItem('token', data.token);
-        // You can also navigate to another page like a dashboard after login success.
+        window.location.href = "/dashboard"; // Assuming you have a dashboard route
       } else {
-        const errorData = await response.json();
-        setErrors(errorData.message);
+        setErrors(data.message);
       }
     } catch (error) {
       console.error('Login error:', error);
