@@ -11,17 +11,31 @@ function RegisterPage() {
     confirmPassword: '',
   });
 
-  const [errors, setErrors] = useState({}); // To store validation errors
+  const [errors, setErrors] = useState({});
+  const [passwordCriteria, setPasswordCriteria] = useState({
+    length: false,
+    specialChar: false,
+    number: false,
+    capital: false,
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Update password criteria when user types a password
+    if (name === 'password') {
+      const length = value.length >= 8;
+      const specialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+      const number = /\d/.test(value);
+      const capital = /[A-Z]/.test(value);
+
+      setPasswordCriteria({ length, specialChar, number, capital });
+    }
   };
 
-  // Client-side validation
   const validateForm = () => {
     let newErrors = {};
-
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
     if (formData.password !== formData.confirmPassword) {
@@ -35,7 +49,7 @@ function RegisterPage() {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Return true if no errors
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -46,21 +60,16 @@ function RegisterPage() {
     }
 
     try {
-      // Send the form data to the backend API
       const response = await fetch('/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         console.log('User registered successfully');
-        // Handle success (e.g., navigate to another page, show a success message)
       } else {
         console.log('Failed to register user');
-        // Handle error (e.g., show an error message)
       }
     } catch (error) {
       console.error('Error during registration:', error);
@@ -121,13 +130,20 @@ function RegisterPage() {
             />
             <div className="password-requirements">
               <ul>
-                <li>Minimum 8 characters</li>
-                <li>At least one special character</li>
-                <li>At least one number</li>
-                <li>At least one capital letter</li>
+                <li className={passwordCriteria.length ? 'valid' : 'invalid'}>
+                  Minimum 8 characters
+                </li>
+                <li className={passwordCriteria.specialChar ? 'valid' : 'invalid'}>
+                  At least one special character
+                </li>
+                <li className={passwordCriteria.number ? 'valid' : 'invalid'}>
+                  At least one number
+                </li>
+                <li className={passwordCriteria.capital ? 'valid' : 'invalid'}>
+                  At least one capital letter
+                </li>
               </ul>
             </div>
-            {/* Display validation errors */}
             {errors.password && <p className="error">{errors.password}</p>}
             {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
             {errors.form && <p className="error">{errors.form}</p>}

@@ -111,11 +111,11 @@ h3 {
 }
 
 .valid {
-  color: green;
+  color: #28a745;
 }
 
 .invalid {
-  color: red;
+  color: #ff073a;
 }
 
 @media screen and (max-width: 768px) {
