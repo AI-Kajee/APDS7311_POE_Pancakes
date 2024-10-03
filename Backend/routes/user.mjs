@@ -50,8 +50,11 @@ router.post("/signup", async (req, res) => {
         // Insert the new user into the database
         const collection = await db.collection("users");
         const result = await collection.insertOne(newUser);
-        
+        console.log(password);
+        res.send(result).status(204);
         res.status(201).json({ message: "User registered successfully." });
+        res.redirect("/login");
+        
     } catch (error) {
         console.error("Signup error:", error);
         res.status(500).json({ message: "Signup failed." });
@@ -99,6 +102,8 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
             token: token,
             name: user.name
         });
+
+        res.redirect("/dashboard");
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({ message: "Login failed due to a server error." });
