@@ -8,6 +8,9 @@ import cors from "cors";
 import helmet from "helmet"; // Import helmet for security
 import rateLimit from "express-rate-limit"; // Import rate limiter
 import brute from "express-brute";
+import xss from 'xss-clean';
+
+app.use(xss()); // Apply XSS clean globally
 
 
 const PORT = 3001;

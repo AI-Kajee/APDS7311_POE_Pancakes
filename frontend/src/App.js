@@ -6,9 +6,7 @@ import RegisterPage from './components/RegisterPage'; // Import the Register Pag
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
 import './App.css';
-import xss from 'xss-clean';
 
-app.use(xss()); // Apply XSS clean globally
 
 
 function App() {

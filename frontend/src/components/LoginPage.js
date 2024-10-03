@@ -8,15 +8,62 @@ function LoginPage() {
     password: '',
   });
 
+  const [errors, setErrors] = useState(''); // State to store error messages
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  // Client-side validation for login form
+  const validateForm = () => {
+    const namePattern = /^[a-zA-Z0-9]+$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    if (!namePattern.test(formData.username)) {
+      setErrors('Username can only contain letters and numbers.');
+      return false;
+    }
+
+    if (!passwordPattern.test(formData.password)) {
+      setErrors('Password must be at least 8 characters, with one number and one letter.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic
-    console.log('Login data submitted:', formData);
+    
+    if (!validateForm()) {
+      return; // Stop the submission if validation fails
+    }
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Login successful:', data);
+
+        // Store token and handle login success (e.g., redirect or show dashboard)
+        localStorage.setItem('token', data.token);
+        // You can also navigate to another page like a dashboard after login success.
+      } else {
+        const errorData = await response.json();
+        setErrors(errorData.message);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setErrors('Something went wrong. Please try again later.');
+    }
   };
 
   return (
@@ -62,6 +109,10 @@ function LoginPage() {
               </div>
             </div>
           </div>
+
+          {/* Display error messages */}
+          {errors && <p className="error-message">{errors}</p>}
+
           <button className="login-button" type="submit">Login</button>
         </form>
       </div>

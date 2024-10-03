@@ -11,15 +11,60 @@ function RegisterPage() {
     confirmPassword: '',
   });
 
+  const [errors, setErrors] = useState({}); // To store validation errors
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  // Client-side validation
+  const validateForm = () => {
+    let newErrors = {};
+
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match.";
+    }
+    if (!passwordPattern.test(formData.password)) {
+      newErrors.password = "Password must be at least 8 characters, include one number, one special character, and one capital letter.";
+    }
+    if (!formData.fullName || !formData.username || !formData.idNumber || !formData.accountNumber) {
+      newErrors.form = "All fields must be filled out.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic
-    console.log('Form data submitted:', formData);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      // Send the form data to the backend API
+      const response = await fetch('/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        console.log('User registered successfully');
+        // Handle success (e.g., navigate to another page, show a success message)
+      } else {
+        console.log('Failed to register user');
+        // Handle error (e.g., show an error message)
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+    }
   };
 
   return (
@@ -82,6 +127,10 @@ function RegisterPage() {
                 <li>At least one capital letter</li>
               </ul>
             </div>
+            {/* Display validation errors */}
+            {errors.password && <p className="error">{errors.password}</p>}
+            {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
+            {errors.form && <p className="error">{errors.form}</p>}
           </div>
         </div>
         <button type="submit">Register</button>
