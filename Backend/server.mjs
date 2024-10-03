@@ -10,30 +10,26 @@ import rateLimit from "express-rate-limit"; // Import rate limiter
 import brute from "express-brute";
 import xss from 'xss-clean';
 
-app.use(xss()); // Apply XSS clean globally
-
-
 const PORT = 3001;
-const app = express();
+const app = express(); // Initialize the app here
 
 const options = {
     key: fs.readFileSync('keys/privatekey.pem'),
     cert: fs.readFileSync('keys/certificate.pem')
 };
 
+// Middleware for XSS protection (XSS Clean)
+app.use(xss()); // Now you can apply it after app is initialized
 
 // Middleware for CORS
 app.use(cors());
 app.use(express.json());
 
-
 // Set security headers using Helmet (Protection against clickjacking)
 app.use(helmet());
 
-
 // Prevent clickjacking by setting the X-Frame-Options header
 app.use(helmet.frameguard({ action: 'deny' }));
-
 
 // Set Content Security Policy (CSP) to prevent clickjacking via embedding via iframes
 app.use(helmet.contentSecurityPolicy({
@@ -43,13 +39,11 @@ app.use(helmet.contentSecurityPolicy({
     },
 }));
 
-
 // Enforce HTTPS for one year
 app.use(helmet.hsts({ maxAge: 60 * 60 * 24 * 365 }));
 
 // Hide the "X-Powered-By" header
 app.use(helmet.hidePoweredBy());
-
 
 // Rate limiting middleware (DDoS protection)
 const limiter = rateLimit({
@@ -60,7 +54,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Set CORS headers manually
-app.use((reg, res, next) => {
+app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
     res.setHeader('Access-Control-Allow-Methods', '*');
@@ -68,10 +62,8 @@ app.use((reg, res, next) => {
 });
 
 // Use routes
-app.use("/post",posts);
-app.route("/post", posts);
+app.use("/post", posts); // No need to use both app.use and app.route, app.use is sufficient
 app.use("/user", users);
-app.use("/user",users)
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -79,10 +71,8 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something went wrong!');
 });
 
-
 // Create HTTPS server
 let server = https.createServer(options, app);
-
 
 server.listen(PORT, () => {
     console.log(`Server is running on https://localhost:${PORT}`);
