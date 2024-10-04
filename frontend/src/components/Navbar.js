@@ -20,7 +20,7 @@ function CustomNavbar() {
         <div className="navbar-links">
           <Link to="/">Home</Link>
           <Link to="/dashboard">Dashboard</Link>
-          <Link to="/payment-portal">Payment Portal</Link>
+          <Link to="/payment">Payment Page</Link>
         </div>
       </div>
       <div className="navbar-right">

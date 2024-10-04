@@ -5,6 +5,7 @@ import HomePage from './components/HomePage';
 import RegisterPage from './components/RegisterPage'; // Import the Register Page
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
+import PaymentPage from './components/PaymentPage';
 import './App.css';
 
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />  {/* Register Page Route */}
           <Route path="/login" element={<LoginPage />} /> {/* Login Page Route */}
           <Route path="/dashboard" element={<Dashboard />} /> {/* Login Page Route */}
+          <Route path="/payment" element={<PaymentPage />} /> {/* Login Page Route */}
         </Routes>
       </div>
     </Router>
