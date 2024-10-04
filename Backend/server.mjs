@@ -22,7 +22,10 @@ const options = {
 app.use(xss()); // Now you can apply it after app is initialized
 
 // Middleware for CORS
-app.use(cors());
+app.use(cors({
+    origin: 'https://localhost:3000',
+    credentials: true
+  }));
 app.use(express.json());
 
 // Set security headers using Helmet (Protection against clickjacking)
