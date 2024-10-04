@@ -60,7 +60,7 @@ function RegisterPage() {
     }
   
     try {
-      const response = await fetch('/user/signup', {
+      const response = await fetch('https://localhost:3001/user/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
