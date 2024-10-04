@@ -12,6 +12,7 @@ var bruteforce = new ExpressBrute(store);
 
 //sign up
 router.post("/signup", async (req, res) => {
+    console.log(req.body);
     const namePattern = /^[a-zA-Z0-9]+$/;
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
@@ -34,6 +35,7 @@ router.post("/signup", async (req, res) => {
 
     try {
         const hashedPassword = await bcrypt.hash(password, 12);
+        console.log("Hashed Password:", hashedPassword);
         let newUser = { fullName, username, idNumber, accountNumber, password: hashedPassword };
         const collection = await db.collection("users");
         await collection.insertOne(newUser);
