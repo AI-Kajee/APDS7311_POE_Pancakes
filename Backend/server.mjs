@@ -10,7 +10,7 @@ import rateLimit from "express-rate-limit"; // Import rate limiter
 import brute from "express-brute";
 import xss from 'xss-clean';
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const app = express(); // Initialize the app here
 
 const options = {
@@ -55,14 +55,6 @@ const limiter = rateLimit({
     message: "Too many requests from this IP, please try again later."
 });
 app.use(limiter);
-
-// Set CORS headers manually
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-    res.setHeader('Access-Control-Allow-Methods', '*');
-    next();
-});
 
 // Use routes
 app.use("/post", posts); // No need to use both app.use and app.route, app.use is sufficient

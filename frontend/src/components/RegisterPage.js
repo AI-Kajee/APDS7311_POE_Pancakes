@@ -37,7 +37,18 @@ function RegisterPage() {
   const validateForm = () => {
     let newErrors = {};
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    const emailPattern = /@/; // Simple check for '@'
 
+    
+    if (emailPattern.test(formData.fullName)) {
+      newErrors.fullName = "Full Name cannot be an email.";
+    }
+    if (emailPattern.test(formData.username)) {
+      newErrors.username = "Username cannot be an email.";
+    }
+
+
+    
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match.";
     }
@@ -94,6 +105,7 @@ function RegisterPage() {
               value={formData.fullName}
               onChange={handleChange}
             />
+            {errors.fullName && <p className="error">{errors.fullName}</p>}
             <input
               type="text"
               name="username"
@@ -101,6 +113,7 @@ function RegisterPage() {
               value={formData.username}
               onChange={handleChange}
             />
+            {errors.fullName && <p className="error">{errors.fullName}</p>}
             <input
               type="text"
               name="idNumber"

@@ -10,6 +10,7 @@ const router = express.Router();
 var store = new ExpressBrute.MemoryStore();
 var bruteforce = new ExpressBrute(store);
 
+
 //sign up
 router.post("/signup", async (req, res) => {
     console.log(req.body);
@@ -23,6 +24,18 @@ router.post("/signup", async (req, res) => {
     const password = sanitize(req.body.password);
     const confirmPassword = sanitize(req.body.confirmPassword);
 
+     // Regex to check for email patterns
+     const emailPattern = /[\w._%+-]+@[\w.-]+\.(com|org|net|gov|edu|mil|info|io|co|biz|me|app|us|xyz|online|store)/i;
+
+
+    // Validate fullName and username against email patterns
+    if (emailPattern.test(fullName)) {
+        return res.status(400).json({ message: "Full Name cannot be an email." });
+    }
+    if (emailPattern.test(username)) {
+        return res.status(400).json({ message: "Username cannot be an email." });
+    }
+     
     if (!namePattern.test(username)) {
         return res.status(400).json({ message: "Invalid username." });
     }
@@ -54,13 +67,25 @@ router.post("/signup", async (req, res) => {
 
 // Login
 router.post("/login", bruteforce.prevent, async (req, res) => {
-    const { username, password, accountNumber } = req.body;
+    console.log("Request Body:", req.body);
+
+    const { username, accountNumber, password } = req.body;
 
     const namePattern = /^[a-zA-Z0-9]+$/;
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
-    if (!namePattern.test(username) || !passwordPattern.test(password)) {
-        return res.status(400).json({ message: "Invalid input data." });
+    // Validate inputs
+    if (!namePattern.test(username)) {
+        console.error("Invalid username format");
+        return res.status(400).json({ message: "Invalid username." });
+    }
+    if (!namePattern.test(accountNumber)) {
+        console.error("Invalid account number format");
+        return res.status(400).json({ message: "Invalid account number." });
+    }
+    if (!passwordPattern.test(password)) {
+        console.error("Invalid password format");
+        return res.status(400).json({ message: "Invalid password." });
     }
 
     try {
@@ -68,12 +93,13 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
         const user = await collection.findOne({ username, accountNumber });
 
         if (!user) {
+            console.error("User not found");
             return res.status(401).json({ message: "Authentication failed: User not found." });
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
-
         if (!passwordMatch) {
+            console.error("Incorrect password");
             return res.status(401).json({ message: "Authentication failed: Incorrect password." });
         }
 
@@ -83,14 +109,13 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
             { expiresIn: "1h" }
         );
 
-        // Send the token back to the client instead of redirecting
-        res.status(200).json({ message: "Authentication successful", token: token, name: user.username });
-
+        res.status(200).json({ message: "Authentication successful", token, name: user.username });
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).json({ message: "Login failed due to a server error." });
     }
 });
+
 
 
 

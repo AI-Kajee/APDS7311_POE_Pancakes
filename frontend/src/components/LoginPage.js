@@ -9,16 +9,20 @@ function LoginPage() {
   });
 
   const [errors, setErrors] = useState(''); // State to store error messages
+  const [loading, setLoading] = useState(false); // To display loading state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+
+
+
   // Client-side validation for login form
   const validateForm = () => {
     const namePattern = /^[a-zA-Z0-9]+$/;
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
     if (!namePattern.test(formData.username)) {
       setErrors('Username can only contain letters and numbers.');
@@ -26,12 +30,13 @@ function LoginPage() {
     }
 
     if (!passwordPattern.test(formData.password)) {
-      setErrors('Password must be at least 8 characters, with one number and one letter.');
+      setErrors('Password must be at least 8 characters, with one number, one letter, and one special character.');
       return false;
     }
 
     return true;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,14 +45,23 @@ function LoginPage() {
       return; // Stop the submission if validation fails
     }
   
+
+    setLoading(true); // Show loading indicator
+
+    // Log the form data to ensure it's correct before sending
+    console.log('FormData being sent:', formData);
+  
     try {
-      const response = await fetch('https://localhost:3001/user/signup', {
+      const response = await fetch('https://localhost:3001/user/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Ensure JSON.stringify is used here
+        credentials: 'include', // Ensures cookies are sent with request if needed for CORS
       });
   
       const data = await response.json();
+
+      setLoading(false); // Hide loading indicator
   
       if (response.ok) {
         console.log('Login successful:', data);
@@ -59,10 +73,12 @@ function LoginPage() {
         setErrors(data.message);
       }
     } catch (error) {
+      setLoading(false); // Hide loading indicator
       console.error('Login error:', error);
       setErrors('Something went wrong. Please try again later.');
     }
   };
+  
 
   return (
     <div className="login-page">
@@ -81,6 +97,7 @@ function LoginPage() {
                   placeholder="Username"
                   value={formData.username}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div className="login-input-group">
@@ -92,6 +109,7 @@ function LoginPage() {
                   placeholder="Account Number"
                   value={formData.accountNumber}
                   onChange={handleChange}
+                  required
                 />
               </div>
               <div className="login-input-group">
@@ -103,6 +121,7 @@ function LoginPage() {
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -110,12 +129,18 @@ function LoginPage() {
 
           {/* Display error messages */}
           {errors && <p className="error-message">{errors}</p>}
+          
+          {/* Show loading indicator */}
+          {loading && <p className="loading-message">Logging in, please wait...</p>}
 
-          <button className="login-button" type="submit">Login</button>
+          <button className="login-button" type="submit" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
       </div>
     </div>
   );
 }
+
 
 export default LoginPage;
