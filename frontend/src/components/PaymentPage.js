@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Payment.css'; // Ensure this path is correct
 
 const PaymentPage = () => {
@@ -12,6 +13,17 @@ const PaymentPage = () => {
   const [accountNumber, setAccountNumber] = useState(''); // Account number
   const [reference, setReference] = useState(''); // Reference
   const [swiftCode, setSwiftCode] = useState('');
+
+  const navigate = useNavigate();
+
+  // Check for JWT token and redirect to login if missing
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      // If no token, redirect to login
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Dashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is authenticated
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      // If no token, redirect to login
+      navigate('/login');
+    }
+  }, [navigate]);
+
   return (
     <div className="dashboard">
       <div className="welcome-section">

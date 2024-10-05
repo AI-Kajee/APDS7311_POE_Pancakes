@@ -5,11 +5,22 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import ExpressBrute from "express-brute";
 import sanitize from 'mongo-sanitize';
+import checkauth from "../check-auth.mjs"; 
 
 const router = express.Router();
 var store = new ExpressBrute.MemoryStore();
 var bruteforce = new ExpressBrute(store);
 
+
+// Protected route for Dashboard
+router.get("/dashboard", checkauth, (req, res) => {
+    res.status(200).json({ message: `Welcome to the dashboard, ${req.user.username}` });
+});
+
+// Protected route for Payment
+router.get("/payment", checkauth, (req, res) => {
+    res.status(200).json({ message: "Accessing payment page" });
+});
 
 //sign up
 router.post("/signup", async (req, res) => {
