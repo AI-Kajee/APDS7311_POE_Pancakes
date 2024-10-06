@@ -38,6 +38,13 @@ function Dashboard() {
     }
   }, [navigate]);
 
+  const handleLogout = () => {
+    // Clear the token
+    localStorage.removeItem('token');
+    // Redirect to the login page
+    navigate('/login');
+  };
+
   return (
     <div className="dashboard">
       <div className="welcome-section">
@@ -57,7 +64,7 @@ function Dashboard() {
         <div className="info-card">
           <h2 className="dashboard-subtitle">Logout?</h2>
           <p>Come back soon, we value your company</p>
-          <button>Logout</button>
+          <button onClick={handleLogout}>Logout</button> {/* Add onClick to handleLogout */}
         </div>
       </div>
 
