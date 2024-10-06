@@ -9,6 +9,7 @@ import helmet from "helmet"; // Import helmet for security
 import rateLimit from "express-rate-limit"; // Import rate limiter
 import brute from "express-brute";
 import xss from 'xss-clean';
+import session from 'express-session';
 
 const PORT = process.env.PORT || 3001;
 const app = express(); // Initialize the app here
@@ -17,6 +18,13 @@ const options = {
     key: fs.readFileSync('keys/privatekey.pem'),
     cert: fs.readFileSync('keys/certificate.pem')
 };
+
+app.use(session({
+    secret: 'our_big_secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true } // set secure true in production
+  }));
 
 // Middleware for XSS protection (XSS Clean)
 app.use(xss()); // Now you can apply it after app is initialized

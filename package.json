@@ -1,7 +1,8 @@
 {
   "dependencies": {
+    "express-session": "^1.18.0",
     "mongo-sanitize": "^1.1.0",
-    "xss-clean": "^0.1.4",
-    "react-scripts": "^4.0.3"
+    "react-scripts": "^4.0.3",
+    "xss-clean": "^0.1.4"
   }
 }

@@ -7,6 +7,7 @@ import ExpressBrute from "express-brute";
 import sanitize from 'mongo-sanitize';
 import checkauth from "../check-auth.mjs"; 
 
+
 const router = express.Router();
 var store = new ExpressBrute.MemoryStore();
 var bruteforce = new ExpressBrute(store);
@@ -114,6 +115,9 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
             return res.status(401).json({ message: "Authentication failed: Incorrect password." });
         }
 
+        //session string
+        req.session.username = user.username;
+
         const token = jwt.sign(
             { username: user.username, accountNumber: user.accountNumber }, 
             "this_secret_should_be_longer_than_it_is", 
@@ -127,7 +131,25 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
     }
 });
 
+router.get("/profile", async (req, res) => {
+    try {
+        if (!req.session.username) {
+            return res.status(401).json({ message: "Not logged in." });
+        }
 
+        const collection = db.collection("users");
+        const user = await collection.findOne({ username: req.session.username });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        res.json({ fullName: user.fullName });
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+        res.status(500).json({ message: "Error fetching user profile." });
+    }
+});
 
 
 //radhya doing test
