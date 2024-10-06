@@ -130,7 +130,7 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
         res.status(500).json({ message: "Login failed due to a server error." });
     }
 });
-
+/*
 router.get("/profile", async (req, res) => {
     try {
         if (!req.session.username) {
@@ -149,7 +149,8 @@ router.get("/profile", async (req, res) => {
         console.error("Error fetching profile:", error);
         res.status(500).json({ message: "Error fetching user profile." });
     }
-});
+});*/
+
 // Payment route
 router.post("/pay", checkauth, async (req, res) => {
     const { amount, currency, provider, accountHolder, accountNumber, reference, swiftCode } = req.body;
