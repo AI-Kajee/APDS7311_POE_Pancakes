@@ -7,28 +7,51 @@ const PaymentPage = () => {
   const [currency, setCurrency] = useState('ZAR'); // Default currency
   const [provider, setProvider] = useState('SWIFT'); // Default provider
   const [accountHolder, setAccountHolder] = useState(''); // Account holder name
-  //const [bank, setBank] = useState(''); // Bank name
-  //const [branchName, setBranchName] = useState(''); // Branch name
-  //const [branchCode, setBranchCode] = useState(''); // Branch code
   const [accountNumber, setAccountNumber] = useState(''); // Account number
   const [reference, setReference] = useState(''); // Reference
   const [swiftCode, setSwiftCode] = useState('');
 
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   // Check for JWT token and redirect to login if missing
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      // If no token, redirect to login
-      navigate('/login');
+      navigate('/login'); // If no token, redirect to login
     }
   }, [navigate]);
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    let newErrors = {};
+    if (!amount) {
+      newErrors.amount = "Amount is required.";
+    }
+    if (!accountHolder) {
+      newErrors.accountHolder = "Account holder name is required.";
+    }
+    if (!accountNumber) {
+      newErrors.accountNumber = "Account number is required.";
+    }
+    if (!reference) {
+      newErrors.reference = "Reference is required.";
+    }
+    if (!swiftCode) {
+      newErrors.swiftCode = "SWIFT code is required.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle payment submission logic here
-    console.log({
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const paymentData = {
       amount,
       currency,
       provider,
@@ -36,7 +59,31 @@ const PaymentPage = () => {
       accountNumber,
       reference,
       swiftCode,
-    });
+    };
+
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('https://localhost:3001/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Payment details saved successfully');
+        // Handle successful payment submission here
+        navigate('/dashboard'); // Redirect to dashboard
+      } else {
+        console.error('Failed to save payment details:', data.message);
+      }
+    } catch (error) {
+      console.error('Error during payment submission:', error);
+    }
   };
 
   return (
@@ -54,6 +101,7 @@ const PaymentPage = () => {
               onChange={(e) => setAmount(e.target.value)}
               required
             />
+            {errors.amount && <p className="error">{errors.amount}</p>}
 
             <label htmlFor="currency">Currency:</label>
             <select
@@ -65,7 +113,6 @@ const PaymentPage = () => {
               <option value="ZAR">ZAR</option>
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
-              {/* Add more currencies as needed */}
             </select>
 
             <label htmlFor="provider">Payment Provider:</label>
@@ -76,10 +123,7 @@ const PaymentPage = () => {
               required
             >
               <option value="SWIFT">SWIFT</option>
-              {/* Add more providers if needed */}
             </select>
-            
-            
           </div>
           <div className="spacer"></div>
           <div className="right-column">
@@ -93,6 +137,7 @@ const PaymentPage = () => {
               onChange={(e) => setAccountHolder(e.target.value)}
               required
             />
+            {errors.accountHolder && <p className="error">{errors.accountHolder}</p>}
 
             <label htmlFor="accountNumber">Account Number:</label>
             <input
@@ -103,7 +148,8 @@ const PaymentPage = () => {
               onChange={(e) => setAccountNumber(e.target.value)}
               required
             />
-            
+            {errors.accountNumber && <p className="error">{errors.accountNumber}</p>}
+
             <label htmlFor="reference">Reference:</label>
             <input
               type="text"
@@ -113,7 +159,8 @@ const PaymentPage = () => {
               onChange={(e) => setReference(e.target.value)}
               required
             />
-            
+            {errors.reference && <p className="error">{errors.reference}</p>}
+
             <label htmlFor="swiftCode">SWIFT Code:</label>
             <input
               type="text"
@@ -123,6 +170,7 @@ const PaymentPage = () => {
               onChange={(e) => setSwiftCode(e.target.value)}
               required
             />
+            {errors.swiftCode && <p className="error">{errors.swiftCode}</p>}
           </div>
         </div>
         <button type="submit" className="payment-button">Pay Now</button>
