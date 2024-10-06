@@ -16,7 +16,7 @@ const PaymentPage = () => {
 
   // Check for JWT token and redirect to login if missing
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login'); // If no token, redirect to login
     }
