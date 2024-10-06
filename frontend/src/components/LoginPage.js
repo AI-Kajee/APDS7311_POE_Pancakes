@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import './LoginPage.css';
 
 function LoginPage() {
@@ -10,6 +11,8 @@ function LoginPage() {
 
   const [errors, setErrors] = useState(''); // State to store error messages
   const [loading, setLoading] = useState(false); // To display loading state
+
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +71,10 @@ function LoginPage() {
   
         // Store the token in local storage and redirect to dashboard
         localStorage.setItem('token', data.token);
-        window.location.href = "/dashboard"; // Assuming you have a dashboard route
+
+        // Slight delay before navigating to ensure DOM updates
+      setTimeout(() => {navigate('/dashboard');}, 500);
+
       } else {
         setErrors(data.message);
       }

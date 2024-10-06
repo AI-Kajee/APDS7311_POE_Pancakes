@@ -7,7 +7,7 @@ function Dashboard() {
 
   useEffect(() => {
     // Check if the user is authenticated
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     if (!token) {
       // If no token, redirect to login
       navigate('/login');
