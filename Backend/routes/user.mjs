@@ -150,6 +150,41 @@ router.get("/profile", async (req, res) => {
         res.status(500).json({ message: "Error fetching user profile." });
     }
 });
+// Payment route
+router.post("/pay", checkauth, async (req, res) => {
+    const { amount, currency, provider, accountHolder, accountNumber, reference, swiftCode } = req.body;
+  
+    // Validate required fields
+    if (!amount || !currency || !provider || !accountHolder || !accountNumber || !reference || !swiftCode) {
+      return res.status(400).send({ message: "All fields are required." });
+    }
+  
+    // Specific validation: amount should be a number greater than 0
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).send({ message: "Invalid amount provided." });
+    }
+  
+    const paymentData = {
+      amount,
+      currency,
+      provider,
+      accountHolder,
+      accountNumber,
+      reference,
+      swiftCode,
+    };
+  
+    try {
+      console.log('Received payment data:', paymentData);
+      let collection = await db.collection("payments");
+      let result = await collection.insertOne(paymentData);
+      console.log('Payment processed successfully:', result);
+      res.status(201).send({ message: "Payment processed successfully", result });
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      res.status(500).send({ message: "Error processing payment. Please try again later." });
+    }
+  });
 
 
 //radhya doing test

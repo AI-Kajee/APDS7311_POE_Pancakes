@@ -1,44 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Payment.css'; // Ensure this path is correct
+import './Payment.css';
 
 const PaymentPage = () => {
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('ZAR'); // Default currency
-  const [provider, setProvider] = useState('SWIFT'); // Default provider
-  const [accountHolder, setAccountHolder] = useState(''); // Account holder name
-  const [accountNumber, setAccountNumber] = useState(''); // Account number
-  const [reference, setReference] = useState(''); // Reference
+  const [currency, setCurrency] = useState('ZAR');
+  const [provider, setProvider] = useState('SWIFT');
+  const [accountHolder, setAccountHolder] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [reference, setReference] = useState('');
   const [swiftCode, setSwiftCode] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
 
-  // Check for JWT token and redirect to login if missing
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login'); // If no token, redirect to login
-    }
+    const validateTokenAndFetchData = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, redirecting to login');
+        navigate('/login');
+        return;
+      }
+
+      try {
+        await fetchPaymentDetails(token);
+      } catch (error) {
+        if (error.message === 'token invalid') {
+          console.log('Invalid token, redirecting to login');
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          console.error('Error during data fetch:', error);
+          setSubmitError('Failed to load payment details. Please try again later.');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    validateTokenAndFetchData();
   }, [navigate]);
+
+  const fetchPaymentDetails = async (token) => {
+    const response = await fetch('https://localhost:3001/user/pay', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to fetch payment details');
+    }
+
+    setAmount(data.amount || '');
+    setCurrency(data.currency || 'ZAR');
+    setProvider(data.provider || 'SWIFT');
+    setAccountHolder(data.accountHolder || '');
+    setAccountNumber(data.accountNumber || '');
+    setReference(data.reference || '');
+    setSwiftCode(data.swiftCode || '');
+    
+    return data;
+  };
 
   const validateForm = () => {
     let newErrors = {};
-    if (!amount) {
-      newErrors.amount = "Amount is required.";
-    }
-    if (!accountHolder) {
-      newErrors.accountHolder = "Account holder name is required.";
-    }
-    if (!accountNumber) {
-      newErrors.accountNumber = "Account number is required.";
-    }
-    if (!reference) {
-      newErrors.reference = "Reference is required.";
-    }
-    if (!swiftCode) {
-      newErrors.swiftCode = "SWIFT code is required.";
-    }
+    if (!amount) newErrors.amount = "Amount is required.";
+    if (!accountHolder) newErrors.accountHolder = "Account holder name is required.";
+    if (!accountNumber) newErrors.accountNumber = "Account number is required.";
+    if (!reference) newErrors.reference = "Reference is required.";
+    if (!swiftCode) newErrors.swiftCode = "SWIFT code is required.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -46,6 +84,7 @@ const PaymentPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError('');
 
     if (!validateForm()) {
       return;
@@ -62,8 +101,16 @@ const PaymentPage = () => {
     };
 
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('https://localhost:3001/payment', {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setSubmitError('Session expired. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      console.log('Sending payment data:', paymentData);
+
+      const response = await fetch('https://localhost:3001/user/pay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,22 +120,34 @@ const PaymentPage = () => {
       });
 
       const data = await response.json();
+      console.log('Response status:', response.status);
+      console.log('Response data:', data);
 
       if (response.ok) {
         console.log('Payment details saved successfully');
-        // Handle successful payment submission here
-        navigate('/dashboard'); // Redirect to dashboard
+        navigate('/dashboard');
       } else {
-        console.error('Failed to save payment details:', data.message);
+        if (data.message === 'token invalid') {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else {
+          setSubmitError(data.message || 'Failed to process payment. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Error during payment submission:', error);
+      setSubmitError('An error occurred. Please try again later.');
     }
   };
+
+  if (isLoading) {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
     <div className="payment-container">
       <h2>Payment Page</h2>
+      {submitError && <div className="error-message">{submitError}</div>}
       <form className="payment-form" onSubmit={handleSubmit}>
         <div className="form-content">
           <div className="left-column">
