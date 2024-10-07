@@ -5,10 +5,9 @@ jobs:
     working_directory: ~/build
     docker:
       - image: sonarsource/sonar-scanner-cli
-    resource_class: small  # Adjust to medium or large if needed
+    resource_class: small
     steps:
       - checkout  # Check out the source code
-      - run: find .  # Debug: Print the directory structure
       - run: |
           # Set the branch to main if CIRCLE_BRANCH is not defined
           SONAR_BRANCH="${CIRCLE_BRANCH:-main}"
