@@ -1,0 +1,72 @@
+/* PrivacyPolicy.css */
+
+.privacy-policy {
+    font-family: 'Nunito', sans-serif; /* Ensure the font is properly imported in your project */
+    min-height: 100vh;
+    background-image: url('apds_bck_img.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.privacy-policy-content {
+    background-color: rgba(173, 216, 230, 0.8); /* Clearish blue background */
+    border: 2px solid #00008b; /* Dark blue outline */
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    padding: 40px;
+    width: 90%; /* Use 90% of the available width */
+    max-width: 1200px; /* Maximum width to prevent stretching too much */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.privacy-policy h1 {
+    text-align: center; /* Center the main title */
+    font-size: 3em; /* Increased main title font size */
+    margin-bottom: 20px; /* Space below the title */
+    color: #0056b3; /* Change title color */
+}
+
+.privacy-policy h2 {
+    margin-top: 30px; /* Space above section headings */
+    font-size: 2em; /* Increased section heading font size */
+    color: #0056b3; /* Change color for section headings */
+}
+
+.privacy-policy p {
+    margin-bottom: 15px; /* Space below paragraphs */
+    color: #333; /* Text color for better readability */
+    font-size: 1.1em; /* Increased paragraph font size */
+}
+
+.privacy-policy ul {
+    margin-left: 20px; /* Indentation for lists */
+    margin-bottom: 20px; /* Space below lists */
+    font-size: 1.1em; /* Increased list font size */
+}
+
+.privacy-policy strong {
+    color: #0056b3; /* Change color for strong text */
+}
+
+@media (max-width: 768px) {
+    .privacy-policy {
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
+
+    .privacy-policy h1 {
+        font-size: 2.5em; /* Smaller title font size for mobile */
+    }
+
+    .privacy-policy h2 {
+        font-size: 1.8em; /* Smaller section heading font size for mobile */
+    }
+
+    .privacy-policy p, .privacy-policy ul {
+        font-size: 1em; /* Adjust paragraph and list font size for mobile */
+    }
+}

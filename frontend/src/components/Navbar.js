@@ -22,6 +22,7 @@ function CustomNavbar() {
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/payment">Payment Page</Link>
           <Link to="/viewpayment">Payment History</Link>
+          <Link to="/privacy-policy">Privacy Policy</Link>
         </div>
       </div>
       <div className="navbar-right">
