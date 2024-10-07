@@ -48,6 +48,8 @@ Here's an updated section for the software tools and technologies used during th
 
 - **Figma**: Used for planning and designing the prototype of the website.
 
+- **Canva**: Used to alter the designs edit Images.
+
 - **Gemini API**: Integrated to handle real-time currency conversions, allowing users to select different currencies for international transfers.
 
 - **Postman**: Utilized for testing and testing API endpoints, ensuring that all functionality, including payments and user authentication, works as expected.
@@ -63,7 +65,7 @@ This comprehensive set of tools and technologies ensured a streamlined developme
 
 ## Getting Started
 
-To run the **Atlas Trust** website on your local machine, follow these steps:
+To run the **Atlas Trust** website locally, follow these steps:
 
 ### Prerequisites
 - **Node.js** (v16 or later)
@@ -91,21 +93,30 @@ To run the **Atlas Trust** website on your local machine, follow these steps:
    GEMINI_API_KEY=your_gemini_api_key
    ```
 
-4. **Start the development server**:
+4. **Start the backend server**:
+   From the root directory, run the following command to start the backend:
+   ```bash
+   npm run dev
+   ```
+   This will start the backend server on `https://localhost:3001`.
+
+5. **Start the frontend server**:
+   Open a new terminal, navigate to the root directory, and run:
    ```bash
    npm start
    ```
-   This will launch the app on `https://localhost:3000`.
+   This will launch the frontend on `https://localhost:3000`.
 
 ### API Testing
 
-- Use **Postman** to test API endpoints if needed. The API base URL will be `https://localhost:3001/api/`.
+- Use **Postman** to test API endpoints. The API base URL will be `https://localhost:3001/api/`.
 
 ### CI/CD Pipeline
 
 - The CI/CD pipeline is set up using **GitHub Actions** and **CircleCI**, so changes pushed to the repository will automatically trigger testing, building, and deployment workflows.
 
 ---
+
 
 ### Contributors 
 
