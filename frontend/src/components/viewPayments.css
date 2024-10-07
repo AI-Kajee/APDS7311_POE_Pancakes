@@ -1,0 +1,55 @@
+.view-payments-container {
+    font-family: Nunito;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100vh;
+    flex-direction: column;
+    background-image: url('apds_bck_img.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 25px;
+}
+
+.payment-list {
+    background-color: transparent;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: none;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.payment-item {
+    background-color: rgba(94, 155, 201, 0.33);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 2px solid #5E9BC9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-details label {
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.payment-details span {
+    color: #ffffff;
+    margin-left: 10px;
+}
+
+@media screen and (max-width: 768px) {
+    .payment-item {
+        flex-direction: column;
+    }
+}
