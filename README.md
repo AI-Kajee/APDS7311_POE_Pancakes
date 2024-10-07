@@ -95,11 +95,11 @@ To run the **Atlas Trust** website on your local machine, follow these steps:
    ```bash
    npm start
    ```
-   This will launch the app on `http://localhost:3000`.
+   This will launch the app on `https://localhost:3000`.
 
 ### API Testing
 
-- Use **Postman** to test API endpoints if needed. The API base URL will be `http://localhost:3000/api/`.
+- Use **Postman** to test API endpoints if needed. The API base URL will be `https://localhost:3001/api/`.
 
 ### CI/CD Pipeline
 
