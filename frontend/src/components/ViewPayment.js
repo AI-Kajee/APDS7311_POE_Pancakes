@@ -10,38 +10,37 @@ const ViewPayments = () => {
 
   useEffect(() => {
     const fetchPayments = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.log('No token found, redirecting to login');
-          navigate('/login');
-          return;
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, redirecting to login');
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const response = await fetch('https://localhost:3001/user/viewPayments', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Error fetching payments:', errorData);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      
-        try {
-          const response = await fetch('https://localhost:3001/user/viewPayments', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          });
-      
-          if (!response.ok) {
-            const errorData = await response.text(); // Get the raw response for debugging
-            console.error('Error fetching payments:', errorData); // Log the response text for debugging
-            throw new Error(`HTTP error! status: ${response.status}`); // Simplified error message
-          }
-      
-          const data = await response.json();
-          setPayments(data); // Assume the server responds with a list of payments
-        } catch (error) {
-          console.error('Error fetching payments:', error);
-          setError('Failed to load payment data. Please try again later.');
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      
+
+        const data = await response.json();
+        setPayments(data);
+      } catch (error) {
+        console.error('Error fetching payments:', error);
+        setError('Failed to load payment data. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
     fetchPayments();
   }, [navigate]);
@@ -57,44 +56,36 @@ const ViewPayments = () => {
   return (
     <div className="view-payments-container">
       <h2>Your Payments</h2>
-      <div className="payment-list">
-        {payments.length > 0 ? (
-          payments.map((payment) => (
-            <div key={payment._id} className="payment-item">
-              <div className="payment-details">
-                <label>Amount:</label> 
-                <span>{payment.amount}</span>
-              </div>
-              <div className="payment-details">
-                <label>Currency:</label> 
-                <span>{payment.currency}</span>
-              </div>
-              <div className="payment-details">
-                <label>Provider:</label> 
-                <span>{payment.provider}</span>
-              </div>
-              <div className="payment-details">
-                <label>Account Holder:</label> 
-                <span>{payment.accountHolder}</span>
-              </div>
-              <div className="payment-details">
-                <label>Account Number:</label> 
-                <span>{payment.accountNumber}</span>
-              </div>
-              <div className="payment-details">
-                <label>Reference:</label> 
-                <span>{payment.reference}</span>
-              </div>
-              <div className="payment-details">
-                <label>SWIFT Code:</label> 
-                <span>{payment.swiftCode}</span>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div>No payments found</div>
-        )}
-      </div>
+      {payments.length > 0 ? (
+        <table className="payment-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>Currency</th>
+              <th>Provider</th>
+              <th>Account Holder</th>
+              <th>Account Number</th>
+              <th>Reference</th>
+              <th>SWIFT Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payments.map((payment) => (
+              <tr key={payment._id}>
+                <td>{payment.amount}</td>
+                <td>{payment.currency}</td>
+                <td>{payment.provider}</td>
+                <td>{payment.accountHolder}</td>
+                <td>{payment.accountNumber}</td>
+                <td>{payment.reference}</td>
+                <td>{payment.swiftCode}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div>No payments found</div>
+      )}
     </div>
   );
 };

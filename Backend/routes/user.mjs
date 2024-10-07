@@ -6,11 +6,51 @@ import jwt from "jsonwebtoken";
 import ExpressBrute from "express-brute";
 import sanitize from 'mongo-sanitize';
 import checkauth from "../check-auth.mjs"; 
+import dotenv from 'dotenv';
+dotenv.config();
 
 
 const router = express.Router();
 var store = new ExpressBrute.MemoryStore();
 var bruteforce = new ExpressBrute(store);
+import crypto from 'crypto';
+
+
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY; // This will use the key you saved in .env
+const IV_LENGTH = 16; // AES block size for CBC mode
+
+// Encrypt function
+function encrypt(text) {
+  let iv = crypto.randomBytes(IV_LENGTH);
+  let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY, 'hex'), iv);
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
+
+// Decrypt function
+function decrypt(encryptedData) {
+  try {
+    if (!encryptedData) {
+      throw new Error('No data provided for decryption.');
+    }
+
+    const [ivHex, encryptedText] = encryptedData.split(':');
+    if (!ivHex || !encryptedText) {
+      throw new Error('Invalid encrypted data format.');
+    }
+
+    const iv = Buffer.from(ivHex, 'hex');
+    const encryptedBuffer = Buffer.from(encryptedText, 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY, 'hex'), iv);
+    let decrypted = decipher.update(encryptedBuffer);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString('utf8');
+  } catch (err) {
+    console.error("Decryption error:", err);
+    throw new Error('Failed to decrypt data.');
+  }
+}
 
 
 // Protected route for Dashboard
@@ -176,13 +216,13 @@ router.post("/pay", checkauth, async (req, res) => {
 
     const username = decodedToken.username;
 
-    // Hash swift code and account number
-    const hashedAccountNumber = await bcrypt.hash(accountNumber, 10);
-    const hashedSwiftCode = await bcrypt.hash(swiftCode, 10);
+    // Encrypt sensitive data
+    const encryptedAccountNumber = encrypt(accountNumber);
+    const encryptedSwiftCode = encrypt(swiftCode);
 
     // Log hashed values for debugging
-    console.log('Hashed Account Number:', hashedAccountNumber);
-    console.log('Hashed Swift Code:', hashedSwiftCode);
+    console.log('Hashed Account Number:', encryptedAccountNumber);
+    console.log('Hashed Swift Code:', encryptedSwiftCode);
 
     const paymentData = {
         username,
@@ -190,8 +230,8 @@ router.post("/pay", checkauth, async (req, res) => {
       currency,
       provider,
       accountHolder,
-      accountNumber: hashedAccountNumber, // Save hashed account number
-      swiftCode: hashedSwiftCode,         // Save hashed swift code
+      accountNumber: encryptedAccountNumber, 
+      swiftCode: encryptedSwiftCode,     
       reference,
     };
 
@@ -213,29 +253,31 @@ router.post("/pay", checkauth, async (req, res) => {
 
   router.get("/viewPayments", checkauth, async (req, res) => {
     try {
-      // Extract username from token payload, assuming it's added during token creation
-    const token = req.headers.authorization.split(" ")[1]; // "Bearer <token>"
-    const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
-
-    const username = decodedToken.username;
+      const token = req.headers.authorization.split(" ")[1]; // "Bearer <token>"
+      const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
+      const username = decodedToken.username;
   
       if (!username) {
         return res.status(400).send({ message: "Username is missing from the token." });
       }
   
-      // Fetch payments for the authenticated user
       const collection = await db.collection("payments");
-      const payments = await collection.find({ username: username }).toArray();
+      const payments = await collection.find({ username }).toArray();
   
-      // Remove sensitive information (hashed fields) before sending to the client
+      console.log("Payments:", payments); // Log entire payments array
+      payments.forEach(payment => {
+        console.log("Encrypted Account Number:", payment.accountNumber);
+        console.log("Encrypted Swift Code:", payment.swiftCode);
+      });
+  
       const safePayments = payments.map((payment) => ({
         amount: payment.amount,
         currency: payment.currency,
         provider: payment.provider,
         accountHolder: payment.accountHolder,
-        accountNumber: payment.accountNumber.replace(/.(?=.{4})/g, '*'), // Mask account number
+        accountNumber: decrypt(payment.accountNumber), // Decrypt here
         reference: payment.reference,
-        swiftCode: payment.swiftCode.replace(/.(?=.{4})/g, '*'), // Mask swift code
+        swiftCode: decrypt(payment.swiftCode), // Decrypt here
       }));
   
       res.status(200).send(safePayments);
