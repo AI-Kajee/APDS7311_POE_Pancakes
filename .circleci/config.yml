@@ -27,6 +27,6 @@ jobs:
           -Dsonar.sources="."
 
 workflows:
-  sonarqube:
+  sonarqube_workflow:
     jobs:
       - sonarqube
