@@ -67,6 +67,7 @@ const ViewPayments = () => {
               <th>Account Number</th>
               <th>Reference</th>
               <th>SWIFT Code</th>
+              <th>Date of Payment</th>
             </tr>
           </thead>
           <tbody>
@@ -79,6 +80,7 @@ const ViewPayments = () => {
                 <td>{payment.accountNumber}</td>
                 <td>{payment.reference}</td>
                 <td>{payment.swiftCode}</td>
+                <td>{payment.date}</td>
               </tr>
             ))}
           </tbody>

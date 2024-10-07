@@ -59,6 +59,16 @@ form input:focus {
   background-color: #fff;
 }
 
+.error {
+  color: red; /* Change the text color to red */
+  font-size: 14px; /* Set a font size */
+  margin: 10px 0; /* Add margin for spacing */
+  background-color: #ffe6e6; /* Light red background */
+  border: 1px solid red; /* Add a red border */
+  padding: 8px; /* Add some padding */
+  border-radius: 4px; /* Rounded corners */
+}
+
 .password-requirements {
   margin-top: 10px;
   font-size: 0.9rem;

@@ -85,9 +85,11 @@ function RegisterPage() {
         window.location.href = "/login"; // Assuming you have a route for login
       } else {
         console.error('Failed to register user:', data.message);
+        setErrors({ ...errors, form: data.message });
       }
     } catch (error) {
       console.error('Error during registration:', error);
+      setErrors({ ...errors, form: "An unexpected error occurred." });
     }
   };
 
@@ -95,6 +97,13 @@ function RegisterPage() {
     <div className="register-container">
       <h2>Register Your Account</h2>
       <h3>Enter the following details</h3>
+      {errors.form && (
+        <p className="error">
+          <span role="img" aria-label="error" style={{ marginRight: '5px' }}>⚠️</span>
+          {errors.form}
+          </p>
+        )}
+
       <form onSubmit={handleSubmit}>
         <div className="form-content">
           <div className="left-column">

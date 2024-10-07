@@ -103,19 +103,26 @@ router.post("/signup", async (req, res) => {
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 12);
-        console.log("Hashed Password:", hashedPassword);
-        let newUser = { fullName, username, idNumber, accountNumber, password: hashedPassword };
-        const collection = await db.collection("users");
-        await collection.insertOne(newUser);
+      const collection = await db.collection("users");
 
-        // Return success without redirect
-        res.status(201).json({ message: "User registered successfully." });
+      // Check if the account number already exists
+      const existingUser = await collection.findOne({ accountNumber });
+      if (existingUser) {
+          return res.status(400).json({ message: "Account number already exists." });
+      }
 
-    } catch (error) {
-        console.error("Signup error:", error);
-        res.status(500).json({ message: "Signup failed." });
-    }
+      const hashedPassword = await bcrypt.hash(password, 12);
+      console.log("Hashed Password:", hashedPassword);
+      let newUser = { fullName, username, idNumber, accountNumber, password: hashedPassword };
+      await collection.insertOne(newUser);
+
+      // Return success without redirect
+      res.status(201).json({ message: "User registered successfully." });
+
+  } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ message: "Signup failed." });
+  }
 });
 
 
@@ -215,6 +222,8 @@ router.post("/pay", checkauth, async (req, res) => {
     const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
 
     const username = decodedToken.username;
+    const currentDate = new Date();
+    const date = currentDate.toLocaleDateString('en-US');
 
     // Encrypt sensitive data
     const encryptedAccountNumber = encrypt(accountNumber);
@@ -233,6 +242,7 @@ router.post("/pay", checkauth, async (req, res) => {
       accountNumber: encryptedAccountNumber, 
       swiftCode: encryptedSwiftCode,     
       reference,
+      date,
     };
 
     console.log('Payment data to insert:', paymentData);
@@ -278,6 +288,7 @@ router.post("/pay", checkauth, async (req, res) => {
         accountNumber: decrypt(payment.accountNumber), // Decrypt here
         reference: payment.reference,
         swiftCode: decrypt(payment.swiftCode), // Decrypt here
+        date: payment.date,
       }));
   
       res.status(200).send(safePayments);
@@ -285,8 +296,7 @@ router.post("/pay", checkauth, async (req, res) => {
       console.error("Error fetching payments:", error);
       res.status(500).send({ message: "Error fetching payments. Please try again later." });
     }
-  });
-  
+  });  
 
 
 //radhya doing test

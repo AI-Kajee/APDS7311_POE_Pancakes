@@ -57,7 +57,7 @@ const PaymentPage = () => {
   };
 
   useEffect(() => {
-    const validateTokenAndFetchData = async () => {
+    const validateToken = () => {
       const token = localStorage.getItem('token');
       if (!token) {
         console.log('No token found, redirecting to login');
@@ -65,56 +65,12 @@ const PaymentPage = () => {
         return;
       }
 
-      try {
-        await fetchPaymentDetails(token);
-      } catch (error) {
-        console.error('Error during data fetch:', error);
-        if (error.message === 'token invalid' || error.response?.status === 401) {
-          console.log('Invalid token, redirecting to login');
-          localStorage.removeItem('token');
-          navigate('/login');
-        } else {
-          setSubmitError('Failed to load payment details. Please try again later.');
-        }
-      } finally {
-        setIsLoading(false);
-      }
+      // If token is valid, you can proceed to load your component's data or setup
+      setIsLoading(false);
     };
 
-    validateTokenAndFetchData();
+    validateToken();
   }, [navigate]);
-
-  const fetchPaymentDetails = async (token) => {
-    try {
-      const response = await fetch('https://localhost:3001/user/pay', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to fetch payment details');
-      }
-
-      const data = await response.json();
-      
-      setAmount(data.amount || '');
-      setCurrency(data.currency || 'ZAR');
-      setProvider(data.provider || 'SWIFT');
-      setAccountHolder(data.accountHolder || '');
-      setAccountNumber(data.accountNumber || '');
-      setReference(data.reference || '');
-      setSwiftCode(data.swiftCode || '');
-
-      return data;
-    } catch (error) {
-      console.error('Fetch payment details error:', error);
-      throw error;
-    }
-  };
 
   const validateForm = () => {
     let newErrors = {};
@@ -184,7 +140,7 @@ const PaymentPage = () => {
 
       if (response.ok) {
         console.log('Payment details saved successfully');
-        navigate('/dashboard');
+        navigate('/viewpayment');
       } else {
         if (response.status === 401 || data.message === 'token invalid') {
           localStorage.removeItem('token');

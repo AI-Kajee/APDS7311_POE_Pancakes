@@ -44,7 +44,7 @@ function Dashboard() {
   };
 
   const handleRedirectToViewPayments = () => {
-    navigate('/viewPayments'); // Redirect to the viewPayments page
+    navigate('/viewpayment'); // Redirect to the viewPayments page
   };
 
   const handleRedirectToPayments = () => {
