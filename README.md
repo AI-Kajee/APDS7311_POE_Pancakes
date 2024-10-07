@@ -11,8 +11,8 @@ Welcome to the **Atlas Trust** project repository. Our team has designed and dev
 At **Atlas Trust**, we prioritize security above all else, compliance, and performance, embedding robust **DevSecOps** practices into every phase of the project. Our approach integrates security seamlessly into development and operations, from automated testing to continuous monitoring, ensuring that potential vulnerabilities are addressed proactively. 
 
 By leveraging modern technologies such as **React** and adhering to best security standards, we aim to deliver a highly reliable, scalable, and secure platform that meets the financial institution's requirements for secure data handling and exceptional user experience.
-
 Your Data is safe with us.
+
 ---
 
 ## Features
