@@ -1,12 +1,15 @@
+version: 2.1
+
 jobs:
   sonarqube:
     working_directory: ~/build
     docker:
-      - image: circleci/python:3.9  # Or another image with more utilities
+      - image: sonarsource/sonar-scanner-cli
     resource_class: small
     steps:
       - checkout
-      - run: find .  # Debug: Prints the directory structure
+      - run: sudo apk add findutils  # Install find command
+      - run: find .  # Debug: Print the directory structure
       - run: |
           SONAR_BRANCH="${CIRCLE_BRANCH:-main}"
           sonar-scanner \
@@ -17,3 +20,8 @@ jobs:
             -Dsonar.login="$SONAR_TOKEN" \
             -Dsonar.branch.name="$SONAR_BRANCH" \
             -Dsonar.sources="."
+
+workflows:
+  sonarqube_workflow:
+    jobs:
+      - sonarqube
