@@ -69,11 +69,6 @@ The **Atlas Trust** website for the international bank includes the following ke
 ---
 
 ## Software and Tools
-Here's an updated section for the software tools and technologies used during the project:
-
----
-
-## Software and Tools
 
 - **Visual Studio Code**: Our code editor of choice for writing and managing the React codebase, with extensions to enhance productivity and ensure code quality.
   
@@ -93,8 +88,6 @@ Here's an updated section for the software tools and technologies used during th
   - **GitHub Actions**: Used to automate the development workflow, including testing, building, and deploying the application.
   - **CircleCI**: Incorporated to run automated tests and ensure continuous integration and delivery.
   - **SonarQube**: Employed for static code analysis to detect potential security vulnerabilities, bugs, and code quality issues.
-
-This comprehensive set of tools and technologies ensured a streamlined development process, with a focus on maintaining high code standards, efficient collaboration, and secure application deployment.
 
 ---
 
