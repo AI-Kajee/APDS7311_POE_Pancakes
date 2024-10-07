@@ -166,6 +166,12 @@ router.post("/pay", checkauth, async (req, res) => {
   }
 
   try {
+    // Extract the token from the Authorization header
+    const token = req.headers.authorization.split(" ")[1]; // "Bearer <token>"
+    const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
+
+    const username = decodedToken.username;
+
     // Hash swift code and account number
     const hashedAccountNumber = await bcrypt.hash(accountNumber, 10);
     const hashedSwiftCode = await bcrypt.hash(swiftCode, 10);
@@ -175,7 +181,8 @@ router.post("/pay", checkauth, async (req, res) => {
     console.log('Hashed Swift Code:', hashedSwiftCode);
 
     const paymentData = {
-      amount,
+        username,
+        amount,
       currency,
       provider,
       accountHolder,
