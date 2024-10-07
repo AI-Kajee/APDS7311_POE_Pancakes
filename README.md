@@ -30,9 +30,6 @@ The **Atlas Trust** website for the international bank includes the following ke
 ---
 
 ## Security Implementations 
----
-
-## Security Measures
 
 ### SSL Certificates
 - **Implementation of SSL Certificates:** Both frontend and backend are secured with SSL certificates to encrypt data in transit.
