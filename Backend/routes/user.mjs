@@ -151,41 +151,50 @@ router.get("/profile", async (req, res) => {
     }
 });*/
 
-// Payment route
+
 router.post("/pay", checkauth, async (req, res) => {
-    const { amount, currency, provider, accountHolder, accountNumber, reference, swiftCode } = req.body;
-  
-    // Validate required fields
-    if (!amount || !currency || !provider || !accountHolder || !accountNumber || !reference || !swiftCode) {
-      return res.status(400).send({ message: "All fields are required." });
-    }
-  
-    // Specific validation: amount should be a number greater than 0
-    if (isNaN(amount) || amount <= 0) {
-      return res.status(400).send({ message: "Invalid amount provided." });
-    }
-  
+  const { amount, currency, provider, accountHolder, accountNumber, reference, swiftCode } = req.body;
+
+  // Validate required fields
+  if (!amount || !currency || !provider || !accountHolder || !accountNumber || !reference || !swiftCode) {
+    return res.status(400).send({ message: "All fields are required." });
+  }
+
+  // Specific validation: amount should be a number greater than 0
+  if (isNaN(amount) || amount <= 0) {
+    return res.status(400).send({ message: "Invalid amount provided." });
+  }
+
+  try {
+    // Hash swift code and account number
+    const hashedAccountNumber = await bcrypt.hash(accountNumber, 10);
+    const hashedSwiftCode = await bcrypt.hash(swiftCode, 10);
+
+    // Log hashed values for debugging
+    console.log('Hashed Account Number:', hashedAccountNumber);
+    console.log('Hashed Swift Code:', hashedSwiftCode);
+
     const paymentData = {
       amount,
       currency,
       provider,
       accountHolder,
-      accountNumber,
+      accountNumber: hashedAccountNumber, // Save hashed account number
+      swiftCode: hashedSwiftCode,         // Save hashed swift code
       reference,
-      swiftCode,
     };
-  
-    try {
-      console.log('Received payment data:', paymentData);
-      let collection = await db.collection("payments");
-      let result = await collection.insertOne(paymentData);
-      console.log('Payment processed successfully:', result);
-      res.status(201).send({ message: "Payment processed successfully", result });
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      res.status(500).send({ message: "Error processing payment. Please try again later." });
-    }
-  });
+
+    console.log('Payment data to insert:', paymentData);
+
+    let collection = await db.collection("payments");
+    let result = await collection.insertOne(paymentData);
+    console.log('Payment processed successfully:', result);
+    res.status(201).send({ message: "Payment processed successfully", result });
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    res.status(500).send({ message: "Error processing payment. Please try again later." });
+  }
+});
 
   router.get("/hello", async (req, res) => {
     console.log("Hello World!");
