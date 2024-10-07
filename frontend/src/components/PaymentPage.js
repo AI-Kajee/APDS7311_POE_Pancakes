@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Payment.css';
 
+const GEMINI_API_KEY = 'AIzaSyBroOCNd5FBparckhRSPONv9g2yxHGylSg';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
 const PaymentPage = () => {
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState('ZAR');
@@ -11,10 +14,47 @@ const PaymentPage = () => {
   const [reference, setReference] = useState('');
   const [swiftCode, setSwiftCode] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isConverting, setIsConverting] = useState(false);
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
+
+  const getConversionFromGemini = async (amount, fromCurrency, toCurrency) => {
+    const prompt = `Convert ${amount} ${fromCurrency} to ${toCurrency}. Please provide only the numerical result without any currency symbols or additional text.`;
+
+    try {
+      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get conversion from Gemini');
+      }
+
+      const data = await response.json();
+      const result = data.candidates[0].content.parts[0].text;
+      const numericResult = parseFloat(result.replace(/[^\d.-]/g, ''));
+
+      if (isNaN(numericResult)) {
+        throw new Error('Failed to parse conversion result');
+      }
+
+      return numericResult.toFixed(2);
+    } catch (error) {
+      console.error('Conversion error:', error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const validateTokenAndFetchData = async () => {
@@ -28,12 +68,12 @@ const PaymentPage = () => {
       try {
         await fetchPaymentDetails(token);
       } catch (error) {
-        if (error.message === 'token invalid') {
+        console.error('Error during data fetch:', error);
+        if (error.message === 'token invalid' || error.response?.status === 401) {
           console.log('Invalid token, redirecting to login');
           localStorage.removeItem('token');
           navigate('/login');
         } else {
-          console.error('Error during data fetch:', error);
           setSubmitError('Failed to load payment details. Please try again later.');
         }
       } finally {
@@ -45,29 +85,35 @@ const PaymentPage = () => {
   }, [navigate]);
 
   const fetchPaymentDetails = async (token) => {
-    const response = await fetch('https://localhost:3001/user/pay', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      const response = await fetch('https://localhost:3001/user/pay', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-    const data = await response.json();
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to fetch payment details');
+      }
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to fetch payment details');
+      const data = await response.json();
+      
+      setAmount(data.amount || '');
+      setCurrency(data.currency || 'ZAR');
+      setProvider(data.provider || 'SWIFT');
+      setAccountHolder(data.accountHolder || '');
+      setAccountNumber(data.accountNumber || '');
+      setReference(data.reference || '');
+      setSwiftCode(data.swiftCode || '');
+
+      return data;
+    } catch (error) {
+      console.error('Fetch payment details error:', error);
+      throw error;
     }
-
-    setAmount(data.amount || '');
-    setCurrency(data.currency || 'ZAR');
-    setProvider(data.provider || 'SWIFT');
-    setAccountHolder(data.accountHolder || '');
-    setAccountNumber(data.accountNumber || '');
-    setReference(data.reference || '');
-    setSwiftCode(data.swiftCode || '');
-    
-    return data;
   };
 
   const validateForm = () => {
@@ -82,11 +128,33 @@ const PaymentPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleConvert = async () => {
+    if (currency !== 'ZAR') {
+      setIsConverting(true);
+      try {
+        const convertedAmount = await getConversionFromGemini(amount, 'ZAR', currency);
+        setAmount(convertedAmount);
+      } catch (error) {
+        console.error('Error during currency conversion:', error);
+        setSubmitError('Currency conversion failed. Please try again.');
+      } finally {
+        setIsConverting(false);
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError('');
 
     if (!validateForm()) {
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setSubmitError('Session expired. Please log in again.');
+      navigate('/login');
       return;
     }
 
@@ -101,20 +169,11 @@ const PaymentPage = () => {
     };
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setSubmitError('Session expired. Please log in again.');
-        navigate('/login');
-        return;
-      }
-
-      console.log('Sending payment data:', paymentData);
-
       const response = await fetch('https://localhost:3001/user/pay', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(paymentData),
       });
@@ -127,7 +186,7 @@ const PaymentPage = () => {
         console.log('Payment details saved successfully');
         navigate('/dashboard');
       } else {
-        if (data.message === 'token invalid') {
+        if (response.status === 401 || data.message === 'token invalid') {
           localStorage.removeItem('token');
           navigate('/login');
         } else {
@@ -152,15 +211,26 @@ const PaymentPage = () => {
         <div className="form-content">
           <div className="left-column">
             <label htmlFor="amount">Amount:</label>
-            <input
-              type="number"
-              id="amount"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-            />
+            <div className="convert-container">
+              <input
+                type="number"
+                id="amount"
+                placeholder="Enter amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="convert-button"
+                onClick={handleConvert}
+                disabled={isConverting}
+              >
+                Convert
+              </button>
+            </div>
             {errors.amount && <p className="error">{errors.amount}</p>}
+            {isConverting && <p className="converting">Converting...</p>}
 
             <label htmlFor="currency">Currency:</label>
             <select
@@ -232,7 +302,8 @@ const PaymentPage = () => {
             {errors.swiftCode && <p className="error">{errors.swiftCode}</p>}
           </div>
         </div>
-        <button type="submit" className="payment-button">Pay Now</button>
+
+        <button type="submit" className="submit-button">Submit Payment</button>
       </form>
     </div>
   );
