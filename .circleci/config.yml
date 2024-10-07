@@ -5,18 +5,18 @@ jobs:
   sonarqube:
     working_directory: ~/build
     docker:
-      - image: cimg/base:stable  # Using a more complete base image
+      - image: cimg/openjdk:17.0  # Using an image with Java 17
     resource_class: small
     steps:
-      - checkout  # Check out the code
+      - checkout
       - attach_workspace:
           at: ~/workspace
       - run:
           name: Install Sonar Scanner
           command: |
-            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
-            unzip sonar-scanner-cli-4.7.0.2747-linux.zip
-            echo 'export PATH=$PATH:~/build/sonar-scanner-4.7.0.2747-linux/bin' >> $BASH_ENV
+            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+            unzip sonar-scanner-cli-4.8.0.2856-linux.zip
+            echo 'export PATH=$PATH:~/build/sonar-scanner-4.8.0.2856-linux/bin' >> $BASH_ENV
             source $BASH_ENV
       - run:
           name: Run Sonar Scanner
