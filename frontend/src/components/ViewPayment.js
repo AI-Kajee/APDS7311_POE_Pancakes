@@ -10,35 +10,38 @@ const ViewPayments = () => {
 
   useEffect(() => {
     const fetchPayments = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('No token found, redirecting to login');
-        navigate('/login');
-        return;
-      }
-
-      try {
-        const response = await fetch('https://localhost:3001/user/payments', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.message || 'Failed to fetch payments');
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('No token found, redirecting to login');
+          navigate('/login');
+          return;
         }
-
-        setPayments(data); // Assume the server responds with a list of payments
-      } catch (error) {
-        console.error('Error fetching payments:', error);
-        setError('Failed to load payment data. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      
+        try {
+          const response = await fetch('https://localhost:3001/user/viewPayments', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.text(); // Get the raw response for debugging
+            console.error('Error fetching payments:', errorData); // Log the response text for debugging
+            throw new Error(`HTTP error! status: ${response.status}`); // Simplified error message
+          }
+      
+          const data = await response.json();
+          setPayments(data); // Assume the server responds with a list of payments
+        } catch (error) {
+          console.error('Error fetching payments:', error);
+          setError('Failed to load payment data. Please try again later.');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
 
     fetchPayments();
   }, [navigate]);

@@ -21,6 +21,7 @@ function CustomNavbar() {
           <Link to="/">Home</Link>
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/payment">Payment Page</Link>
+          <Link to="/viewpayment">Payment History</Link>
         </div>
       </div>
       <div className="navbar-right">

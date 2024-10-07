@@ -11,9 +11,7 @@ function Dashboard() {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
-    }
-    else {
-
+    } else {
       fetch('http://localhost:3001/profile', {
         method: 'GET',
         headers: {
@@ -21,20 +19,20 @@ function Dashboard() {
           'Content-Type': 'application/json',
         },
       })
-      .then((response) => {
-        if (response.status === 401) {
-          navigate('/login');
-          throw new Error('Unauthorized'); // Redirect if not authorized
-        }
-        return response.json(); // Parse JSON response
-      })
-      .then((data) => {
-        // Update state with full name
-        setFullName(data.fullName);
-      })
-      .catch((error) => {
-        console.error('Error fetching profile:', error);
-      });
+        .then((response) => {
+          if (response.status === 401) {
+            navigate('/login');
+            throw new Error('Unauthorized'); // Redirect if not authorized
+          }
+          return response.json(); // Parse JSON response
+        })
+        .then((data) => {
+          // Update state with full name
+          setFullName(data.fullName);
+        })
+        .catch((error) => {
+          console.error('Error fetching profile:', error);
+        });
     }
   }, [navigate]);
 
@@ -45,21 +43,30 @@ function Dashboard() {
     navigate('/login');
   };
 
+  const handleRedirectToViewPayments = () => {
+    navigate('/viewPayments'); // Redirect to the viewPayments page
+  };
+
+  const handleRedirectToPayments = () => {
+    navigate('/payment'); // Redirect to the viewPayments page
+  };
+
   return (
     <div className="dashboard">
       <div className="welcome-section">
-      <h1>Welcome {fullName}</h1> {/* Use fullName from state */}
+        <h1>Welcome {fullName}</h1> {/* Use fullName from state */}
       </div>
 
       <div className="info-section">
         <div className="info-card">
-          <h2 className="dashboard-subtitle">What are we?</h2>
-          <p>We are an international bank, more details to come later.</p>
-        </div>
-        <div className="info-card">
           <h2 className="dashboard-subtitle">Enter the Payment Gateway</h2>
           <p>Click here to complete any international payments</p>
-          <button>Payment Gateway</button>
+          <button onClick={handleRedirectToPayments}>Payment Gateway</button> {/* Button to redirect to viewPayments */}
+        </div>
+        <div className="info-card">
+          <h2 className="dashboard-subtitle">Payments Made?</h2>
+          <p>View all your payments.</p>
+          <button onClick={handleRedirectToViewPayments}>View Payments</button> {/* New button for redirecting to viewPayments */}
         </div>
         <div className="info-card">
           <h2 className="dashboard-subtitle">Logout?</h2>

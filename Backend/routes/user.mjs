@@ -23,6 +23,10 @@ router.get("/payment", checkauth, (req, res) => {
     res.status(200).json({ message: "Accessing payment page" });
 });
 
+router.get("/viewpayment", checkauth, (req, res) => {
+    res.status(200).json({ message: "Accessing view payment page" });
+});
+
 //sign up
 router.post("/signup", async (req, res) => {
     console.log(req.body);
@@ -206,6 +210,41 @@ router.post("/pay", checkauth, async (req, res) => {
   router.get("/hello", async (req, res) => {
     console.log("Hello World!");
   });
+
+  router.get("/viewPayments", checkauth, async (req, res) => {
+    try {
+      // Extract username from token payload, assuming it's added during token creation
+    const token = req.headers.authorization.split(" ")[1]; // "Bearer <token>"
+    const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
+
+    const username = decodedToken.username;
+  
+      if (!username) {
+        return res.status(400).send({ message: "Username is missing from the token." });
+      }
+  
+      // Fetch payments for the authenticated user
+      const collection = await db.collection("payments");
+      const payments = await collection.find({ username: username }).toArray();
+  
+      // Remove sensitive information (hashed fields) before sending to the client
+      const safePayments = payments.map((payment) => ({
+        amount: payment.amount,
+        currency: payment.currency,
+        provider: payment.provider,
+        accountHolder: payment.accountHolder,
+        accountNumber: payment.accountNumber.replace(/.(?=.{4})/g, '*'), // Mask account number
+        reference: payment.reference,
+        swiftCode: payment.swiftCode.replace(/.(?=.{4})/g, '*'), // Mask swift code
+      }));
+  
+      res.status(200).send(safePayments);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      res.status(500).send({ message: "Error fetching payments. Please try again later." });
+    }
+  });
+  
 
 
 //radhya doing test
