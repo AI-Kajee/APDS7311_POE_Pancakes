@@ -187,6 +187,10 @@ router.post("/pay", checkauth, async (req, res) => {
     }
   });
 
+  router.get("/hello", async (req, res) => {
+    console.log("Hello World!");
+  });
+
 
 //radhya doing test
 export default router
