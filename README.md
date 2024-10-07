@@ -30,6 +30,44 @@ The **Atlas Trust** website for the international bank includes the following ke
 ---
 
 ## Security Implementations 
+---
+
+## Security Measures
+
+### SSL Certificates
+- **Implementation of SSL Certificates:** Both frontend and backend are secured with SSL certificates to encrypt data in transit.
+- **Mitigation of Man-in-the-Middle (MitM) Attacks:** Utilizes asymmetric cryptography to protect data.
+- **Upgrade to HTTPS:** Ensures secure data transmission between visitors and the website.
+
+### Prevention Against SQL Injection and Session Jacking
+- **Bcrypt Implementation:**
+  - Protects against session jacking by hashing passwords and sensitive information before storage in MongoDB.
+
+- **Mongo-Sanitize:**
+  - Sanitizes user inputs before database interactions to prevent NoSQL injection attacks.
+
+- **Secure Session Management:**
+  - Implements `HttpOnly` and `Secure` cookie flags to enhance security.
+  - Ensures robust session handling.
+
+### Cross-Site Scripting (XSS) and Clickjacking Protection
+- **xss-clean Middleware:**
+  - Sanitizes inputs from:
+    - POST request body
+    - GET request query
+    - URL parameters
+
+- **Helmet Middleware:**
+  - Sets various HTTP security headers, including:
+    - `X-Content-Type-Options`
+    - `X-Frame-Options`
+    - `Strict-Transport-Security`
+  - Enables `X-XSS-Protection` for additional XSS mitigation.
+
+### DDoS Protection
+- **Rate Limiting:**
+  - Implemented using `express-rate-limit` to control the number of requests from a single IP address.
+  - Configurable time window and maximum request limits to protect against DDoS attacks.
 
 ---
 
