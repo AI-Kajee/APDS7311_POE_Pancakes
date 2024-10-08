@@ -1,4 +1,28 @@
 # <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/compass.png" alt="Visual Studio Code" width="100" height="100">  Atlas Trust
+---
+# Table of Contents
+
+1. [Overview](#overview)
+2. [Features](#features)
+    - [Login and Register](#login-and-register)
+    - [User Dashboard](#user-dashboard)
+    - [Payment Page](#payment-page)
+    - [View Payments Page](#view-payments-page)
+3. [Security Implementations](#security-implementations)
+    - [SSL Certificates](#ssl-certificates)
+    - [Prevention Against SQL Injection and Session Jacking](#prevention-against-sql-injection-and-session-jacking)
+    - [XSS and Clickjacking Protection](#xss-and-clickjacking-protection)
+    - [DDoS Protection](#ddos-protection)
+    - [Sensitive Data Encryption](#sensitive-data-encryption)
+4. [Software and Tools](#software-and-tools)
+5. [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+6. [API Testing](#api-testing)
+7. [CI/CD Pipeline](#cicd-pipeline)
+8. [Contributors](#contributors)
+9. [License](#license)
+10. [Code Attribution](#code-attribution)
 
 ---
 ### Youtube Demo
