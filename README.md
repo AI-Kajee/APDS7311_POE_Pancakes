@@ -1,4 +1,5 @@
 # ATLAS TRUST
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/compass.png" alt="Visual Studio Code" width="100" height="100"> 
 ---
 ### Youtube Demo
 Click on the thumbnail below to watch our prototype run through.
