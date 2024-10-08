@@ -68,6 +68,9 @@ The **Atlas Trust** website for the international bank includes the following ke
   - Implemented using `express-rate-limit` to control the number of requests from a single IP address.
   - Configurable time window and maximum request limits to protect against DDoS attacks.
 
+### Sensitive Data Encryption
+
+  - Crypto for Payment Data: Encrypts and decrypts sensitive payment info using a secure key stored in an environment file (.env) along with the Mongo URL.
 ---
 
 ## Software and Tools
