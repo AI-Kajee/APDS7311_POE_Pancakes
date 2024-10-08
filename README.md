@@ -69,25 +69,34 @@ The **Atlas Trust** website for the international bank includes the following ke
 ---
 
 ## Software and Tools
-
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Visual%20Studio%20Code.jpeg" alt="Visual Studio Code" width="100" height="100">
 - **Visual Studio Code**: Our code editor of choice for writing and managing the React codebase, with extensions to enhance productivity and ensure code quality.
-  
+
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/React.js_Readme.jpg" alt="React" width="100" height="100">
 - **React**: The front-end library used to build a responsive, dynamic, and user-friendly interface for the website.
 
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Visual%20Studio%20Code.jpeg" alt="Mongo" width="100" height="100">
 - **MongoDB**: Our database solution, providing a scalable and flexible NoSQL data storage for user accounts, transaction records, and other critical information.
 
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Figma_%20The%20Collaborative%20Interface%20Design%20Tool.jpeg" alt="Figma" width="100" height="100">
 - **Figma**: Used for planning and designing the prototype of the website.
 
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/10%20Canva%20Magic%20Tricks%20That'll%20Save%20You%20100's%20of%20Hours%20%C2%BB%20Smartiac.jpeg" alt="Canva" width="100" height="100">
 - **Canva**: Used to alter the designs edit Images.
 
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Google%20Ai%20Gemini%20Logo%20PNG%20vector%20in%20SVG%2C%20PDF%2C%20AI%2C%20CDR%20format.jpeg" alt="Gemini" width="100" height="100">
 - **Gemini API**: Integrated to handle real-time currency conversions, allowing users to select different currencies for international transfers.
 
+<img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Top%205%20Postman%20Courses%20for%20Java%20Web%20Developers%20and%20API%20Testers%20in%202024%20-%20Best%20of%20Lot.jpeg" alt="Postman" width="100" height="100">
 - **Postman**: Utilized for testing and testing API endpoints, ensuring that all functionality, including payments and user authentication, works as expected.
 
 - **CI/CD Pipeline**:
   - **GitHub Actions**: Used to automate the development workflow, including testing, building, and deploying the application.
+    <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/A%20Beginners%20Guide%20to%20CI_CD%20with%20GitHub%20Actions.jpeg" alt="Postman" width="100" height="100">
   - **CircleCI**: Incorporated to run automated tests and ensure continuous integration and delivery.
+    <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/CircleCI%20Logo%20-%20PNG%20Logo%20Vector%20Brand%20Downloads%20(SVG%2C%20EPS).jpeg" alt="Postman" width="100" height="100">
   - **SonarQube**: Employed for static code analysis to detect potential security vulnerabilities, bugs, and code quality issues.
+    <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Clean%20Code%20Programming%20Languages.jpeg" alt="Postman" width="100" height="100">
 
 ---
 
