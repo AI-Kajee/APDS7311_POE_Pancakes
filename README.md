@@ -103,8 +103,7 @@ To run the **Atlas Trust** website locally, follow these steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-repo/atlas-trust.git
-   cd atlas-trust
+   [ git clone https://github.com/your-repo/atlas-trust.git](https://github.com/AI-Kajee/APDS7311_POE_Pancakes.git)
    ```
 
 2. **Install dependencies**:
