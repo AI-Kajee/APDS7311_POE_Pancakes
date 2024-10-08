@@ -70,6 +70,18 @@ The **Atlas Trust** website for the international bank includes the following ke
 
 ## Software and Tools
 
+<p align="center">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Visual%20Studio%20Code.jpeg" alt="Visual Studio Code" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/React.js_Readme.jpg" alt="React" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Visual%20Studio%20Code.jpeg" alt="Mongo" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Figma_%20The%20Collaborative%20Interface%20Design%20Tool.jpeg" alt="Figma" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/10%20Canva%20Magic%20Tricks%20That'll%20Save%20You%20100's%20of%20Hours%20%C2%BB%20Smartiac.jpeg" alt="Canva" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Google%20Ai%20Gemini%20Logo%20PNG%20vector%20in%20SVG%2C%20PDF%2C%20AI%2C%20CDR%20format.jpeg" alt="Gemini" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Top%205%20Postman%20Courses%20for%20Java%20Web%20Developers%20and%20API%20Testers%20in%202024%20-%20Best%20of%20Lot.jpeg" alt="Postman" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/A%20Beginners%20Guide%20to%20CI_CD%20with%20GitHub%20Actions.jpeg" alt="GitHub Actions" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/CircleCI%20Logo%20-%20PNG%20Logo%20Vector%20Brand%20Downloads%20(SVG%2C%20EPS).jpeg" alt="CircleCI" width="200" height="200">
+  <img src="https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Clean%20Code%20Programming%20Languages.jpeg" alt="SonarQube" width="200" height="200">
+</p>
 
 - **Visual Studio Code**: Our code editor of choice for writing and managing the React codebase, with extensions to enhance productivity and ensure code quality.
 - **React**: The front-end library used to build a responsive, dynamic, and user-friendly interface for the website.
