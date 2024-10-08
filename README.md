@@ -163,3 +163,9 @@ For more details, please refer to the [LICENSE](./LICENSE) file.
 ---
 
 ## Code Attribution
+### Attribution
+
+The code snippet for implementing rate limiting using Express and `express-rate-limit` middleware is adapted from the Mozilla Developer Network's article on securing APIs with rate limiting. 
+
+Source: Mozilla Developer Network. (2023) *Securing APIs with express-rate-limit and express-slow-down*. Available at: [https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/](https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/) (Accessed: 8 October 2024).
+
