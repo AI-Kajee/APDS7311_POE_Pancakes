@@ -164,7 +164,16 @@ For more details, please refer to the [LICENSE](./LICENSE) file.
 ## Code Attribution
 ### Attribution
 
-The code snippet for implementing rate limiting using Express and `express-rate-limit` middleware is adapted from the Mozilla Developer Network's article on securing APIs with rate limiting. 
+- The code snippet for implementing rate limiting using Express and `express-rate-limit` middleware is adapted from the Mozilla Developer Network's article on securing APIs with rate limiting.
+  - Source: Mozilla Developer Network. (2023) *Securing APIs with express-rate-limit and express-slow-down*. Available at: [https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/](https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/) (Accessed: 8 October 2024).
 
-Source: Mozilla Developer Network. (2023) *Securing APIs with express-rate-limit and express-slow-down*. Available at: [https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/](https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/) (Accessed: 8 October 2024).
+- [Integration of Gemini AI in React](https://medium.com/@codewithadurintiashok/integration-of-gemini-ai-in-react-8872025088de) by Adurinti Ashok
+
+- [How to Make React.js Use HTTPS in Development](https://medium.com/swlh/how-to-make-react-js-use-https-in-development-4ead560eff10) by SWLH
+
+- [mongo-sanitize npm package](https://www.npmjs.com/package/mongo-sanitize) – A tool to sanitize MongoDB queries and prevent injection attacks.
+
+- [express-brute npm package](https://www.npmjs.com/package/express-brute) – A rate-limiting middleware for Express to protect against brute-force attacks.
+
+
 
