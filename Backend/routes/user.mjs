@@ -83,6 +83,10 @@ router.post("/signup", async (req, res) => {
      // Regex to check for email patterns
      const emailPattern = /[\w._%+-]+@[\w.-]+\.(com|org|net|gov|edu|mil|info|io|co|biz|me|app|us|xyz|online|store)/i;
 
+     // Validate that username does not start with "adu" (case-insensitive)
+    if (/^adu/i.test(username)) {
+        return res.status(400).json({ message: "Username cannot start with 'adu' in any case combination." });
+    }
 
     // Validate fullName and username against email patterns
     if (emailPattern.test(fullName)) {
