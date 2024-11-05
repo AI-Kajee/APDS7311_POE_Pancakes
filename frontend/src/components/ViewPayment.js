@@ -68,6 +68,7 @@ const ViewPayments = () => {
               <th>Reference</th>
               <th>SWIFT Code</th>
               <th>Date of Payment</th>
+              <th>Status</th> {/* New Status column */}
             </tr>
           </thead>
           <tbody>
@@ -81,6 +82,7 @@ const ViewPayments = () => {
                 <td>{payment.reference}</td>
                 <td>{payment.swiftCode}</td>
                 <td>{payment.date}</td>
+                <td>{payment.status}</td> {/* Display status */}
               </tr>
             ))}
           </tbody>

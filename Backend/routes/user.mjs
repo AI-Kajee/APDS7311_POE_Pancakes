@@ -202,7 +202,6 @@ router.get("/profile", async (req, res) => {
     }
 });*/
 
-
 router.post("/pay", checkauth, async (req, res) => {
   const { amount, currency, provider, accountHolder, accountNumber, reference, swiftCode } = req.body;
 
@@ -220,7 +219,6 @@ router.post("/pay", checkauth, async (req, res) => {
     // Extract the token from the Authorization header
     const token = req.headers.authorization.split(" ")[1]; // "Bearer <token>"
     const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
-
     const username = decodedToken.username;
     const currentDate = new Date();
     const date = currentDate.toLocaleDateString('en-US');
@@ -229,13 +227,14 @@ router.post("/pay", checkauth, async (req, res) => {
     const encryptedAccountNumber = encrypt(accountNumber);
     const encryptedSwiftCode = encrypt(swiftCode);
 
-    // Log hashed values for debugging
-    console.log('Hashed Account Number:', encryptedAccountNumber);
-    console.log('Hashed Swift Code:', encryptedSwiftCode);
+    // Log encrypted values for debugging
+    console.log('Encrypted Account Number:', encryptedAccountNumber);
+    console.log('Encrypted Swift Code:', encryptedSwiftCode);
 
+    // Payment data with status set to "Pending"
     const paymentData = {
-        username,
-        amount,
+      username,
+      amount,
       currency,
       provider,
       accountHolder,
@@ -243,12 +242,13 @@ router.post("/pay", checkauth, async (req, res) => {
       swiftCode: encryptedSwiftCode,     
       reference,
       date,
+      status: "Pending", // Default status
     };
 
     console.log('Payment data to insert:', paymentData);
 
-    let collection = await db.collection("payments");
-    let result = await collection.insertOne(paymentData);
+    const collection = await db.collection("payments");
+    const result = await collection.insertOne(paymentData);
     console.log('Payment processed successfully:', result);
     res.status(201).send({ message: "Payment processed successfully", result });
   } catch (error) {
@@ -257,46 +257,48 @@ router.post("/pay", checkauth, async (req, res) => {
   }
 });
 
-  router.get("/hello", async (req, res) => {
-    console.log("Hello World!");
-  });
+router.get("/hello", async (req, res) => {
+  console.log("Hello World!");
+  res.send("Hello World!");
+});
 
-  router.get("/viewPayments", checkauth, async (req, res) => {
-    try {
-      const token = req.headers.authorization.split(" ")[1]; // "Bearer <token>"
-      const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
-      const username = decodedToken.username;
-  
-      if (!username) {
-        return res.status(400).send({ message: "Username is missing from the token." });
-      }
-  
-      const collection = await db.collection("payments");
-      const payments = await collection.find({ username }).toArray();
-  
-      console.log("Payments:", payments); // Log entire payments array
-      payments.forEach(payment => {
-        console.log("Encrypted Account Number:", payment.accountNumber);
-        console.log("Encrypted Swift Code:", payment.swiftCode);
-      });
-  
-      const safePayments = payments.map((payment) => ({
-        amount: payment.amount,
-        currency: payment.currency,
-        provider: payment.provider,
-        accountHolder: payment.accountHolder,
-        accountNumber: decrypt(payment.accountNumber), // Decrypt here
-        reference: payment.reference,
-        swiftCode: decrypt(payment.swiftCode), // Decrypt here
-        date: payment.date,
-      }));
-  
-      res.status(200).send(safePayments);
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-      res.status(500).send({ message: "Error fetching payments. Please try again later." });
+router.get("/viewPayments", checkauth, async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1]; // "Bearer <token>"
+    const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
+    const username = decodedToken.username;
+
+    if (!username) {
+      return res.status(400).send({ message: "Username is missing from the token." });
     }
-  });  
+
+    const collection = await db.collection("payments");
+    const payments = await collection.find({ username }).toArray();
+
+    console.log("Payments:", payments);
+    payments.forEach(payment => {
+      console.log("Encrypted Account Number:", payment.accountNumber);
+      console.log("Encrypted Swift Code:", payment.swiftCode);
+    });
+
+    const safePayments = payments.map((payment) => ({
+      amount: payment.amount,
+      currency: payment.currency,
+      provider: payment.provider,
+      accountHolder: payment.accountHolder,
+      accountNumber: decrypt(payment.accountNumber), // Decrypt here
+      reference: payment.reference,
+      swiftCode: decrypt(payment.swiftCode), // Decrypt here
+      date: payment.date,
+      status: payment.status, // Include status in the response
+    }));
+
+    res.status(200).send(safePayments);
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+    res.status(500).send({ message: "Error fetching payments. Please try again later." });
+  }
+});
 
 
 //radhya doing test

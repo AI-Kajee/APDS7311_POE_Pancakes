@@ -57,39 +57,63 @@ router.delete("/:id", async (req, res) => {
 
 // Payment route
 router.post("/pay", checkauth, async (req, res) => {
-    const { amount, currency, provider, accountHolder, accountNumber, reference, swiftCode } = req.body;
-  
-    // Validate required fields
-    if (!amount || !currency || !provider || !accountHolder || !accountNumber || !reference || !swiftCode) {
-      return res.status(400).send({ message: "All fields are required." });
+  const { amount, currency, provider, accountHolder, accountNumber, reference, swiftCode } = req.body;
+
+  // Validate required fields
+  if (!amount || !currency || !provider || !accountHolder || !accountNumber || !reference || !swiftCode) {
+    return res.status(400).send({ message: "All fields are required." });
+  }
+
+  // Specific validation: amount should be a number greater than 0
+  if (isNaN(amount) || amount <= 0) {
+    return res.status(400).send({ message: "Invalid amount provided." });
+  }
+
+  const paymentData = {
+    amount,
+    currency,
+    provider,
+    accountHolder,
+    accountNumber,
+    reference,
+    swiftCode,
+    status: "Pending"  // Set default status to "Pending"
+  };
+
+  try {
+    console.log('Received payment data:', paymentData);
+    let collection = await db.collection("payments");
+    let result = await collection.insertOne(paymentData);
+    console.log('Payment processed successfully:', result);
+    res.status(201).send({ message: "Payment processed successfully", result });
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    res.status(500).send({ message: "Error processing payment. Please try again later." });
+  }
+});
+
+// Route to update payment status
+router.patch("/pay/:id", checkauth, async (req, res) => {
+  const { status } = req.body;
+  if (!["Approved", "Denied", "Pending"].includes(status)) {
+    return res.status(400).send({ message: "Invalid status provided." });
+  }
+
+  const query = { _id: new ObjectId(req.params.id) };
+  const update = { $set: { status } };
+
+  try {
+    let collection = await db.collection("payments");
+    let result = await collection.updateOne(query, update);
+    if (result.matchedCount === 0) {
+      res.status(404).send({ message: "Payment not found" });
+    } else {
+      res.status(200).send({ message: `Payment status updated to ${status}`, result });
     }
-  
-    // Specific validation: amount should be a number greater than 0
-    if (isNaN(amount) || amount <= 0) {
-      return res.status(400).send({ message: "Invalid amount provided." });
-    }
-  
-    const paymentData = {
-      amount,
-      currency,
-      provider,
-      accountHolder,
-      accountNumber,
-      reference,
-      swiftCode,
-    };
-  
-    try {
-      console.log('Received payment data:', paymentData);
-      let collection = await db.collection("payments");
-      let result = await collection.insertOne(paymentData);
-      console.log('Payment processed successfully:', result);
-      res.status(201).send({ message: "Payment processed successfully", result });
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      res.status(500).send({ message: "Error processing payment. Please try again later." });
-    }
-  });
-  
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).send({ message: "Error updating payment status. Please try again later." });
+  }
+});
 
 export default router;
