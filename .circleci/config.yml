@@ -1,12 +1,28 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
 version: 2.1
 
-# Define jobs
+# Define a job to be invoked later in a workflow.
 jobs:
   say-hello:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/node:latest  # Using a Node.js image for JavaScript
     steps:
-      - run: echo "Hello, world!"
+      - checkout  # Check out the code from the repository
+      - run:
+          name: "Say hello"
+          command: "echo Hello, World!"
+
+  run-tests:
+    docker:
+      - image: cimg/node:latest  # Node.js image for running JavaScript tests
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: npm install  # Install project dependencies
+      - run:
+          name: Run Tests
+          command: npm test  # Run your tests
 
   sonarqube:
     docker:
@@ -17,7 +33,7 @@ jobs:
       - run:
           name: Run SonarCloud Scan
           command: |
-            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
+            SONAR_BRANCH="${CIRCLE_BRANCH:-main}"
             echo "Sonar branch value is: $SONAR_BRANCH"
             echo "Sonar org value is: $SONAR_ORG"
             sonar-scanner \
@@ -32,9 +48,10 @@ jobs:
 # Orchestrate jobs using workflows
 workflows:
   version: 2
-  say-hello-workflow:
+  say-hello-workflow: 
     jobs:
       - say-hello
+      - run-tests
       - sonarqube:
           requires:
-            - say-hello  # Ensure that the Sonar scan runs after the hello job
+            - run-tests  # Ensure that the Sonar scan runs after the tests
