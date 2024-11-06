@@ -157,6 +157,42 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
 
     try {
         const collection = db.collection("users");
+
+
+
+        // Check if the username starts with "ADU"
+        if (/^ADU/i.test(username)) {
+          const employeeCollection = db.collection("employees");
+          const employee = await employeeCollection.findOne({ username });
+
+          if (!employee) {
+              console.error("Employee not found in employees collection");
+              return res.status(401).json({ message: "Authentication failed: Employee not found." });
+          }
+
+          const passwordMatch = await bcrypt.compare(password, employee.password);
+          if (!passwordMatch) {
+              console.error("Incorrect password for employee");
+              return res.status(401).json({ message: "Authentication failed: Incorrect password." });
+          }
+
+          // session string
+          req.session.username = employee.username;
+
+          const token = jwt.sign(
+              { username: employee.username, accountNumber: employee.accountNumber },
+              "this_secret_should_be_longer_than_it_is",
+              { expiresIn: "1h" }
+          );
+
+          return res.status(200).json({ message: "Authentication successful", token, name: employee.username });
+      }
+
+
+
+
+
+
         const user = await collection.findOne({ username, accountNumber });
 
         if (!user) {
@@ -303,6 +339,62 @@ router.get("/viewPayments", checkauth, async (req, res) => {
     res.status(500).send({ message: "Error fetching payments. Please try again later." });
   }
 });
+
+
+
+
+
+
+// Route to manually add an employee
+router.post("/addEmployee", async (req, res) => {
+  const { fullname, username, idNumber, accountNumber, password } = req.body;
+
+  // Validate required fields
+  if (!fullname || !username || !idNumber || !accountNumber || !password) {
+      return res.status(400).json({ message: "All fields are required." });
+  }
+
+  try {
+      // Ensure username starts with "ADU"
+      if (!/^ADU/i.test(username)) {
+          return res.status(400).json({ message: "Employee username must start with 'ADU'." });
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 12);
+      console.log("Hashed Password:", hashedPassword);
+
+      // Create the admin object
+      const newEmployee = {
+          fullname,
+          username,
+          idNumber,
+          accountNumber,
+          password: hashedPassword,
+      };
+
+      // Insert into the 'employees' collection
+      const collection = await db.collection("employees"); 
+      const result = await collection.insertOne(newEmployee);
+
+      console.log("Employee added successfully:", result);
+      res.status(201).json({ message: "Employee added successfully." });
+  } catch (error) {
+      console.error("Error adding employee:", error);
+      res.status(500).json({ message: "Failed to add employee." });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
 
 
 //radhya doing test
