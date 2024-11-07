@@ -1,9 +1,18 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext  } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 import './Navbar.css'; // Importing the custom CSS file
 import logo from './apds_logo.png'; // Import your logo (adjust path as necessary)
 
 function CustomNavbar() {
+  const { isLoggedIn, userRole, logout } = useContext(AuthContext); // Access Auth context
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -19,15 +28,38 @@ function CustomNavbar() {
         </div>
         <div className="navbar-links">
           <Link to="/">Home</Link>
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/payment">Payment Page</Link>
-          <Link to="/viewpayment">Payment History</Link>
+
+          {/* Conditionally render links based on user role */}
+          {userRole === 'user' && (
+            <>
+              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/payment">Payment Page</Link>
+              <Link to="/viewpayment">Payment History</Link>
+            </>
+          )}
+
+          {userRole === 'employee' && (
+            <>
+              <Link to="/empdashboard">Employee Dashboard</Link>
+              {/* Add other employee-specific links here */}
+            </>
+          )}
+
           <Link to="/privacy-policy">Privacy Policy</Link>
         </div>
       </div>
       <div className="navbar-right">
-        <Link to="/register">Register</Link>
-        <Link to="/login">Login</Link>
+        {/* Conditionally render register/login based on whether the user is logged in */}
+        {!isLoggedIn ? (
+          <>
+            <Link to="/register">Register</Link>
+            <Link to="/login">Login</Link>
+          </>
+        ) : (
+          <>
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        )}
       </div>
     </nav>
   );

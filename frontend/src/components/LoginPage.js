@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import { AuthContext } from './AuthContext';
 import './LoginPage.css';
 
 function LoginPage() {
@@ -11,7 +12,7 @@ function LoginPage() {
 
   const [errors, setErrors] = useState(''); // State to store error messages
   const [loading, setLoading] = useState(false); // To display loading state
-
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate(); // Initialize navigate
 
   const handleChange = (e) => {
@@ -50,7 +51,6 @@ function LoginPage() {
   
 
     setLoading(true); // Show loading indicator
-
     // Log the form data to ensure it's correct before sending
     console.log('FormData being sent:', formData);
   
@@ -63,18 +63,16 @@ function LoginPage() {
       });
   
       const data = await response.json();
-
       setLoading(false); // Hide loading indicator
   
       if (response.ok) {
-        console.log('Login successful:', data);
-  
+        //console.log('Login successful:', data);
         // Store the token in local storage and redirect to dashboard
-        localStorage.setItem('token', data.token);
-
+        //localStorage.setItem('token', data.token);
         // Slight delay before navigating to ensure DOM updates
-      setTimeout(() => {navigate('/dashboard');}, 500);
-
+        //setTimeout(() => {navigate('/dashboard');}, 500);
+        login(data.token); 
+        navigate('/dashboard');
       } else {
         setErrors(data.message);
       }
