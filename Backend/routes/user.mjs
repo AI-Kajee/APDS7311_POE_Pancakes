@@ -180,7 +180,7 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
           req.session.username = employee.username;
 
           const token = jwt.sign(
-              { username: employee.username, accountNumber: employee.accountNumber },
+              { username: employee.username, accountNumber: employee.accountNumber, userRole: "employee" },
               "this_secret_should_be_longer_than_it_is",
               { expiresIn: "1h" }
           );
@@ -210,7 +210,7 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
         req.session.username = user.username;
 
         const token = jwt.sign(
-            { username: user.username, accountNumber: user.accountNumber }, 
+            { username: user.username, accountNumber: user.accountNumber, userRole: "user" }, 
             "this_secret_should_be_longer_than_it_is", 
             { expiresIn: "1h" }
         );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './Dashboard.css';
+import './EmpDashboard.css';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
@@ -18,7 +18,7 @@ function Dashboard() {
         const decodedToken = jwtDecode(token);
         setUserRole(decodedToken.userRole);
 
-        if (decodedToken.userRole === 'user') {
+        if (decodedToken.userRole === 'employee') {
           fetch('http://localhost:3001/profile', {
             method: 'GET',
             headers: {
@@ -41,7 +41,7 @@ function Dashboard() {
             });
         } else {
           // If user role is 'employee', redirect to User Dashboard component or route
-          navigate('/empdashboard');
+          navigate('/dashboard');
         }
       } catch (error) {
         console.error('Invalid token:', error);
@@ -73,18 +73,18 @@ function Dashboard() {
 
       <div className="info-section">
         <div className="info-card">
-          <h2 className="dashboard-subtitle">Enter the Payment Gateway</h2>
-          <p>Click here to complete any international payments</p>
-          <button onClick={handleRedirectToPayments}>Payment Gateway</button> {/* Button to redirect to viewPayments */}
+          <h2 className="dashboard-subtitle">Approve Payments</h2>
+          <p>Click here to approve or deny pending payments</p>
+          <button onClick={handleRedirectToPayments}>Payment Portal</button> {/* Button to redirect to viewPayments */}
         </div>
         <div className="info-card">
-          <h2 className="dashboard-subtitle">Payments Made?</h2>
-          <p>View all your payments.</p>
+          <h2 className="dashboard-subtitle">Payment History</h2>
+          <p>View all approved/denied payments.</p>
           <button onClick={handleRedirectToViewPayments}>View Payments</button> {/* New button for redirecting to viewPayments */}
         </div>
         <div className="info-card">
           <h2 className="dashboard-subtitle">Logout?</h2>
-          <p>Come back soon, we value your company</p>
+          <p>Thank you for your service.</p>
           <button onClick={handleLogout}>Logout</button> {/* Add onClick to handleLogout */}
         </div>
       </div>
