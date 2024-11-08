@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.mjs",
-    "dev": "nodemon server.mjs"
+    "dev": "nodemon server.mjs",
+    "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -23,5 +24,8 @@
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.0",
     "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
