@@ -1,24 +1,15 @@
-# Use CircleCI pipeline process engine version 2.1
 version: 2.1
 
-# Define jobs for the pipeline
 jobs:
-  # SonarQube scan job
   sonarqube-scan:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
     resource_class: small
     steps:
-      - checkout # Checks out the code from your repository
-      - run:
-          name: Install dependencies
-          command: |
-            # Add commands to install dependencies, if required
-            npm install
+      - checkout
       - run:
           name: Run SonarQube Analysis
           command: |
-            # Set branch for Sonar scan
             SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
             echo "Starting SonarQube analysis for branch: $SONAR_BRANCH"
             sonar-scanner \
@@ -26,13 +17,13 @@ jobs:
               -Dsonar.organization="$SONAR_ORG" \
               -Dsonar.host.url="https://sonarcloud.io" \
               -Dsonar.sources="." \
-              -Dsonar.exclusions="node_modules/**,test/**" \
+              -Dsonar.c.file.suffixes=- \
+              -Dsonar.cpp.file.suffixes=- \
+              -Dsonar.objc.file.suffixes=- \
               -Dsonar.branch.name="$SONAR_BRANCH" \
               -Dsonar.login="$SONAR_TOKEN" \
               -Dsonar.qualitygate.wait=true
-          # Adds a wait for the quality gate to ensure the pipeline fails if quality metrics are not met
 
-# Define workflow to execute SonarQube scan job
 workflows:
   version: 2
   sonar-analysis-workflow:
