@@ -1,5 +1,4 @@
 version: 2.1
-
 jobs:
   sonarqube-scan:
     docker:
@@ -21,7 +20,6 @@ jobs:
               -Dsonar.branch.name="$SONAR_BRANCH" \
               -Dsonar.login="$SONAR_TOKEN" \
               -Dsonar.qualitygate.wait=true
-
 workflows:
   version: 2
   sonar-analysis-workflow:
