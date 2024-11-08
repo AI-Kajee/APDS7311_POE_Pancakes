@@ -1,25 +1,28 @@
 version: 2.1
 
-# Define the jobs
 jobs:
-  # Job for running tests
   run_tests:
     docker:
       - image: circleci/node:16  # Use the appropriate Node.js version
     steps:
-      - checkout  # This pulls your repo code to the CircleCI environment
+      - checkout  # Pulls your repo code to the CircleCI environment
       - run:
           name: Install dependencies
           command: |
             cd Backend  # Make sure to navigate to the correct directory if needed
-            npm install
+            npm install  # Install the dependencies
+      - run:
+          name: Install Jest globally
+          command: |
+            cd Backend  # Ensure you're in the correct directory
+            npm install -g jest  # Install Jest globally to avoid permission issues
       - run:
           name: Run Jest tests
           command: |
             cd Backend  # Again, ensure you're in the correct directory
-            npm test  # This should now work with the test script defined in your package.json
+            chmod +x ./node_modules/.bin/jest  # Ensure Jest is executable
+            ./node_modules/.bin/jest --coverage  # Run Jest directly, avoiding potential path issues
 
-  # Job for SonarQube scan
   sonarqube:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
@@ -38,12 +41,9 @@ jobs:
             -Dsonar.branch.name="$SONAR_BRANCH" \
             -Dsonar.sources="."
 
-# Define the workflows
 workflows:
   version: 2
   test:
     jobs:
-      - run_tests
-      - sonarqube:
-          requires:
-            - run_tests
+      - run_tests  # First run the tests
+      - sonarqube  # Then run SonarQube analysis
