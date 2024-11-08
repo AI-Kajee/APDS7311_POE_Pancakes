@@ -1,48 +1,49 @@
 version: 2.1
 
-# Define the jobs in CircleCI
+# Define the jobs
 jobs:
-  # Job for running Jest tests
-  test:
+  # Job for running tests
+  run_tests:
     docker:
-      - image: circleci/node:16 # Using Node.js Docker image to run tests
+      - image: circleci/node:16  # Use the appropriate Node.js version
     steps:
-      - checkout # Get the code from your repository
+      - checkout  # This pulls your repo code to the CircleCI environment
       - run:
           name: Install dependencies
-          command: npm install # Install all the dependencies listed in package.json
+          command: |
+            cd Backend  # Make sure to navigate to the correct directory if needed
+            npm install
       - run:
           name: Run Jest tests
-          command: npm test # Run the test command (which is "jest --coverage" in package.json)
+          command: |
+            cd Backend  # Again, ensure you're in the correct directory
+            npm test  # This should now work with the test script defined in your package.json
 
-  # Job for SonarQube analysis
+  # Job for SonarQube scan
   sonarqube:
     docker:
       - image: sonarsource/sonar-scanner-cli:latest
     resource_class: small
     steps:
-      - checkout # Get the code from your repository
-      - run:
-          name: Run SonarQube analysis
-          command: |
-            SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
-            echo "Sonar branch value is: $SONAR_BRANCH"
-            echo "Sonar org value is: $SONAR_ORG"
-            sonar-scanner \
-              -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
-              -Dsonar.organization="$SONAR_ORG" \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.exclusions="**/node_modules/**,**/tests/**,**/android/**,**/ios/**" \
-              -Dsonar.login="$SONAR_TOKEN" \
-              -Dsonar.branch.name="$SONAR_BRANCH" \
-              -Dsonar.sources="."
+      - run: |
+          SONAR_BRANCH="${CIRCLE_BRANCH:-master}"
+          echo "Sonar branch value is: $SONAR_BRANCH"
+          echo "Sonar org value is: $SONAR_ORG"
+          sonar-scanner \
+            -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+            -Dsonar.organization="$SONAR_ORG" \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.exclusions="**/android/**,**/ios/**" \
+            -Dsonar.login="$SONAR_TOKEN" \
+            -Dsonar.branch.name="$SONAR_BRANCH" \
+            -Dsonar.sources="."
 
-# Define workflows for orchestrating jobs
+# Define the workflows
 workflows:
   version: 2
-  sonar-analysis:
+  test:
     jobs:
-      - test   # Run tests first
+      - run_tests
       - sonarqube:
           requires:
-            - test 
+            - run_tests
