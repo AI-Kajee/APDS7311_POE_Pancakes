@@ -45,4 +45,4 @@ workflows:
       - test   # Run tests first
       - sonarqube:
           requires:
-            - test  # Ensure SonarQube analysis runs only after tests
+            - test 
