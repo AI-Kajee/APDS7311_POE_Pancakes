@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { AuthContext } from './AuthContext';
 
 function Dashboard() {
   const [fullName, setFullName] = useState('');
   const [userRole, setUserRole] = useState('');
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
     // Check if the user is authenticated
@@ -51,10 +53,8 @@ function Dashboard() {
   }, [navigate]);
 
   const handleLogout = () => {
-    // Clear the token
-    localStorage.removeItem('token');
-    // Redirect to the login page
-    navigate('/login');
+    logout(); // Use logout from context to clear session and reset navbar
+    navigate('/login'); // Redirect to login page
   };
 
   const handleRedirectToViewPayments = () => {
