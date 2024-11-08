@@ -12,16 +12,10 @@ jobs:
             cd Backend  # Make sure to navigate to the correct directory if needed
             npm install  # Install the dependencies
       - run:
-          name: Install Jest globally
-          command: |
-            cd Backend  # Ensure you're in the correct directory
-            npm install -g jest  # Install Jest globally to avoid permission issues
-      - run:
           name: Run Jest tests
           command: |
             cd Backend  # Again, ensure you're in the correct directory
-            chmod +x ./node_modules/.bin/jest  # Ensure Jest is executable
-            ./node_modules/.bin/jest --coverage  # Run Jest directly, avoiding potential path issues
+            npm test  # This will run the test script defined in your package.json
 
   sonarqube:
     docker:
