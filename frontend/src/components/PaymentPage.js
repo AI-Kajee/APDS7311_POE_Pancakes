@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Payment.css';
+import { jwtDecode } from 'jwt-decode';
 
 const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 const GEMINI_API_URL = process.env.REACT_APP_GEMINI_API_URL;
@@ -64,11 +65,22 @@ const PaymentPage = () => {
         navigate('/login');
         return;
       }
-
-      // If token is valid, you can proceed to load your component's data or setup
-      setIsLoading(false);
+  
+      try {
+        const decodedToken = jwtDecode(token);
+        // Verify the role from the token (e.g., only users should access the payment page)
+        if (decodedToken.userRole !== 'user') {
+          navigate('/login');
+        } else {
+          // If the token is valid and role is correct, proceed
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Invalid token:', error);
+        navigate('/login');
+      }
     };
-
+  
     validateToken();
   }, [navigate]);
 

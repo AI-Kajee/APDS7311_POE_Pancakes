@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import './viewPayments.css';
 
 const ViewPayments = () => {
@@ -18,6 +19,15 @@ const ViewPayments = () => {
       }
 
       try {
+        const decodedToken = jwtDecode(token);
+        
+        // Ensure only users with the 'user' role access this page
+        if (decodedToken.userRole !== 'user') {
+          console.log('Unauthorized access, redirecting to login');
+          navigate('/login');
+          return;
+        }
+
         const response = await fetch('https://localhost:3001/user/viewPayments', {
           method: 'GET',
           headers: {
