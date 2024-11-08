@@ -9,13 +9,18 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            cd Backend  # Make sure to navigate to the correct directory
+            cd Backend  # Ensure we are in the correct directory
             npm install  # Install the dependencies, including Jest
+      - run:
+          name: Ensure Jest is executable
+          command: |
+            cd Backend
+            chmod +x ./node_modules/.bin/jest  # Ensure the Jest binary has execute permissions
       - run:
           name: Run Jest tests
           command: |
-            cd Backend  # Ensure you're in the correct directory
-            npm test  # This will run Jest directly using the locally installed version of Jest
+            cd Backend
+            ./node_modules/.bin/jest --coverage  # Explicitly run Jest
 
   sonarqube:
     docker:
