@@ -341,6 +341,41 @@ router.get("/viewPayments", checkauth, async (req, res) => {
 });
 
 
+router.get("/viewPendingPayments", async (req, res) => {
+  try {
+    // Fetch payments from MongoDB where status is 'Pending'
+    const collection = await db.collection("payments");
+    const pendingPayments = await collection.find({ status: "Pending" }).toArray();
+
+    if (!pendingPayments.length) {
+      return res.status(404).send({ message: "No pending payments found." });
+    }
+
+    console.log("Pending Payments:", pendingPayments);
+    pendingPayments.forEach(payment => {
+      console.log("Encrypted Account Number:", payment.accountNumber);
+      console.log("Encrypted Swift Code:", payment.swiftCode);
+    });
+
+    // Map payments to return safe data
+    const safePendingPayments = pendingPayments.map((payment) => ({
+      amount: payment.amount,
+      currency: payment.currency,
+      provider: payment.provider,
+      accountHolder: payment.accountHolder,
+      accountNumber: decrypt(payment.accountNumber), // Decrypt here
+      reference: payment.reference,
+      swiftCode: decrypt(payment.swiftCode), // Decrypt here
+      date: payment.date,
+      status: payment.status, // Include status in the response
+    }));
+
+    res.status(200).send(safePendingPayments);
+  } catch (error) {
+    console.error("Error fetching pending payments:", error);
+    res.status(500).send({ message: "Error fetching pending payments. Please try again later." });
+  }
+});
 
 
 
