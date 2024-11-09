@@ -41,7 +41,8 @@ function CustomNavbar() {
           {userRole === 'employee' && (
             <>
               <Link to="/empdashboard">Employee Dashboard</Link>
-              {/* Add other employee-specific links here */}
+              <Link to="/paymentportal">Payment Portal</Link>
+              <Link to="/paymenthistory">Payment History</Link>
             </>
           )}
 
