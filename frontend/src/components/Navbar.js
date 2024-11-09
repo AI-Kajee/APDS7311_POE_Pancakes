@@ -42,7 +42,6 @@ function CustomNavbar() {
             <>
               <Link to="/empdashboard">Employee Dashboard</Link>
               <Link to="/paymentportal">Payment Portal</Link>
-              <Link to="/paymenthistory">Payment History</Link>
             </>
           )}
 

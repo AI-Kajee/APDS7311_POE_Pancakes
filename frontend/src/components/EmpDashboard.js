@@ -78,11 +78,6 @@ function EmpDashboard() {
           <button onClick={handleRedirectToPayments}>Payment Portal</button> {/* Button to redirect to viewPayments */}
         </div>
         <div className="info-card">
-          <h2 className="dashboard-subtitle">Payment History</h2>
-          <p>View all approved/denied payments.</p>
-          <button onClick={handleRedirectToViewPayments}>View Payments</button> {/* New button for redirecting to viewPayments */}
-        </div>
-        <div className="info-card">
           <h2 className="dashboard-subtitle">Logout?</h2>
           <p>Thank you for your service.</p>
           <button onClick={handleLogout}>Logout</button> {/* Add onClick to handleLogout */}
