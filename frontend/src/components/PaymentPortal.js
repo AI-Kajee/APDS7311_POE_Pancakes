@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './PaymentPortal.css';
+import './PaymentHistory.css';
 
 const ViewPayments = () => {
   const [payments, setPayments] = useState([]);
@@ -18,7 +18,7 @@ const ViewPayments = () => {
       }
 
       try {
-        const response = await fetch('https://localhost:3001/user/viewPayments', {
+        const response = await fetch('https://localhost:3001/user/viewPendingPayments', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -33,7 +33,11 @@ const ViewPayments = () => {
         }
 
         const data = await response.json();
-        setPayments(data);
+        
+        // Filter payments to only show those belonging to "Nehal"
+        const filteredPayments = data.filter(payment => payment.accountHolder === 'Nehal');
+        
+        setPayments(filteredPayments);
       } catch (error) {
         console.error('Error fetching payments:', error);
         setError('Failed to load payment data. Please try again later.');
@@ -52,12 +56,12 @@ const ViewPayments = () => {
   if (error) {
     return <div className="error-message">{error}</div>;
   }
-//change what is in the table - for nehal
+
   return (
-    <div className="payment-portal-container">
+    <div className="payment-history-container">
       <h2>Your Payments</h2>
       {payments.length > 0 ? (
-        <table className="portal-table">
+        <table className="history-table">
           <thead>
             <tr>
               <th>Amount</th>
