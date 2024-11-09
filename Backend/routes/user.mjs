@@ -380,165 +380,64 @@ router.get("/viewPendingPayments", async (req, res) => {
   }
 });
 
-router.get("/viewAppPayments", async (req, res) => {
+
+router.get("/viewPendingPayments", async (req, res) => {
   try {
+    // Fetch payments from MongoDB where status is 'Pending'
     const collection = await db.collection("payments");
+    const pendingPayments = await collection.find({ status: "Pending" }).toArray();
 
-    // Fetch payments where 'status' is either non-existent or not equal to 'Pending'
-    const appPayments = await collection.find({
-      $or: [
-        { status: { $exists: false } },  // No 'status' field
-        { status: { $ne: "Pending" } }   // 'status' field is not 'Pending'
-      ]
-    }).toArray();
-
-    if (!appPayments.length) {
-      return res.status(404).send({ message: "No applicable app payments found." });
+    if (!pendingPayments.length) {
+      return res.status(404).send({ message: "No pending payments found." });
     }
 
-    console.log("Filtered App Payments:", appPayments);
-    appPayments.forEach(payment => {
+    console.log("Pending Payments:", pendingPayments);
+    pendingPayments.forEach(payment => {
       console.log("Encrypted Account Number:", payment.accountNumber);
       console.log("Encrypted Swift Code:", payment.swiftCode);
     });
 
-    // Map payments to return safe data, handling decryption errors
-    const safeAppPayments = appPayments.map((payment) => {
-      let accountNumber, swiftCode;
+    // Map payments to return safe data
+    const safePendingPayments = pendingPayments.map((payment) => ({
+      amount: payment.amount,
+      currency: payment.currency,
+      provider: payment.provider,
+      accountHolder: payment.accountHolder,
+      accountNumber: decrypt(payment.accountNumber), // Decrypt here
+      reference: payment.reference,
+      swiftCode: decrypt(payment.swiftCode), // Decrypt here
+      date: payment.date,
+      status: payment.status, // Include status in the response
+    }));
 
-      try {
-        accountNumber = decrypt(payment.accountNumber); // Attempt to decrypt
-      } catch (error) {
-        console.error("Failed to decrypt account number:", error);
-        accountNumber = "Decryption Failed"; // Fallback value or leave it blank
-      }
-
-      try {
-        swiftCode = decrypt(payment.swiftCode); // Attempt to decrypt
-      } catch (error) {
-        console.error("Failed to decrypt swift code:", error);
-        swiftCode = "Decryption Failed"; // Fallback value or leave it blank
-      }
-
-      return {
-        amount: payment.amount,
-        currency: payment.currency,
-        provider: payment.provider,
-        accountHolder: payment.accountHolder,
-        accountNumber,
-        reference: payment.reference,
-        swiftCode,
-        date: payment.date,
-        status: payment.status || "N/A", // Include status or default to "N/A"
-      };
-    });
-
-    res.status(200).send(safeAppPayments);
-  } catch (err) {
-    console.error("Error fetching app payments:", err);
-    res.status(500).send({ message: "An error occurred while fetching app payments." });
+    res.status(200).send(safePendingPayments);
+  } catch (error) {
+    console.error("Error fetching pending payments:", error);
+    res.status(500).send({ message: "Error fetching pending payments. Please try again later." });
   }
 });
 
 
+router.put("/updatePaymentStatus", checkauth, async (req, res) => {
+  const { amount, date, reference, status } = req.body;
 
-
-
-// Add this to user.mjs after your existing routes
-router.put("/updatePaymentStatus/:paymentId", checkauth, async (req, res) => {
   try {
-    const { paymentId } = req.params;
-    const { status } = req.body;
-
-    console.log('Received update request:', {
-      paymentId,
-      status,
-      body: req.body
-    });
-
-    // Validate paymentId format
-    if (!ObjectId.isValid(paymentId)) {
-      console.log('Invalid payment ID format:', paymentId);
-      return res.status(400).json({ 
-        message: "Invalid payment ID format." 
-      });
-    }
-
-    // Validate status
-    if (!['Approved', 'Denied'].includes(status)) {
-      console.log('Invalid status:', status);
-      return res.status(400).json({ 
-        message: "Invalid status. Status must be either 'Approved' or 'Denied'." 
-      });
-    }
-
-    // Verify the token and get employee information
-    const token = req.headers.authorization.split(" ")[1];
-    const decodedToken = jwt.verify(token, "this_secret_should_be_longer_than_it_is");
-    
-    console.log('Decoded token:', {
-      username: decodedToken.username,
-      userRole: decodedToken.userRole
-    });
-
-    // Check if the user is an employee (username starts with ADU)
-    if (!decodedToken.username.toUpperCase().startsWith('ADU')) {
-      console.log('Unauthorized access attempt by:', decodedToken.username);
-      return res.status(403).json({ 
-        message: "Only employees can update payment status." 
-      });
-    }
-
     const collection = await db.collection("payments");
-    
-    // Find the payment first to ensure it exists
-    const payment = await collection.findOne({ 
-      _id: new ObjectId(paymentId)
-    });
 
-    console.log('Found payment:', payment);
-
-    if (!payment) {
-      return res.status(404).json({ 
-        message: "Payment not found." 
-      });
-    }
-
-    // Update the payment status
+    // Update document based on unique fields
     const result = await collection.updateOne(
-      { _id: new ObjectId(paymentId) },
-      { 
-        $set: { 
-          status: status,
-          processedBy: decodedToken.username,
-          processedAt: new Date()
-        } 
-      }
+      { amount, date, reference },
+      { $set: { status, processedAt: new Date() } }
     );
 
-    console.log('Update result:', result);
-
     if (result.modifiedCount === 0) {
-      return res.status(400).json({ 
-        message: "Failed to update payment status. No documents were modified." 
-      });
+      return res.status(404).json({ message: "No matching payment found to update." });
     }
 
-    res.status(200).json({ 
-      message: `Payment ${status.toLowerCase()} successfully.`,
-      paymentId,
-      status,
-      processedBy: decodedToken.username
-    });
-
+    res.status(200).json({ message: `Payment ${status.toLowerCase()} successfully.` });
   } catch (error) {
-    console.error("Detailed error updating payment status:", {
-      error: error.message,
-      stack: error.stack
-    });
-    res.status(500).json({ 
-      message: "Error updating payment status: " + error.message
-    });
+    console.error("Error updating payment status:", error);
+    res.status(500).json({ message: "Error updating payment status." });
   }
 });
 

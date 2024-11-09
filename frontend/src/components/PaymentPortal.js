@@ -48,39 +48,44 @@ const ViewPayments = () => {
     fetchPayments();
   }, [navigate]);
 
-  const handleStatusChange = async (paymentId, newStatus) => {
+  const handleStatusChange = async (payment, newStatus) => {
+    if (!payment) {
+      console.error("Payment is undefined");
+      setError("Failed to update payment status. Payment is undefined.");
+      return;
+    }
+  
+    const { amount, date, reference } = payment; // Extract fields from payment
     const token = localStorage.getItem("token");
+  
     if (!token) {
       console.log("No token found, redirecting to login");
       navigate("/login");
       return;
     }
-
+  
     try {
-      const response = await fetch(
-        `https://localhost:3001/user/updatePaymentStatus/${paymentId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
+      const response = await fetch("https://localhost:3001/user/updatePaymentStatus", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount, date, reference, status: newStatus }), // Send unique fields and status
+      });
+  
       if (!response.ok) {
         const errorData = await response.text();
-        console.error("Error 2 updating payment status:", errorData);
+        console.error("Error updating payment status:", errorData);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+  
       // Update payment status locally
       setPayments((prevPayments) =>
-        prevPayments.map((payment) =>
-          payment._id === paymentId
-            ? { ...payment, status: newStatus }
-            : payment
+        prevPayments.map((p) =>
+          p.amount === amount && p.date === date && p.reference === reference
+            ? { ...p, status: newStatus }
+            : p
         )
       );
     } catch (error) {
@@ -88,6 +93,7 @@ const ViewPayments = () => {
       setError("Failed to update payment status. Please try again later.");
     }
   };
+  
 
   if (isLoading) {
     return <div className="loading">Loading...</div>;
@@ -113,55 +119,43 @@ const ViewPayments = () => {
               <th>SWIFT Code</th>
               <th>Date of Payment</th>
               <th>Status</th>
-              <th>Actions</th>{" "}
-              {/* New column for approval and rejection buttons */}
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {payments.map((payment) => (
-              <tr key={payment._id}>
-                <td>{payment.amount}</td>
-                <td>{payment.currency}</td>
-                <td>{payment.provider}</td>
-                <td>{payment.accountHolder}</td>
-                <td>{payment.accountNumber}</td>
-                <td>{payment.reference}</td>
-                <td>{payment.swiftCode}</td>
-                <td>{payment.date}</td>
-                <td>{payment.status}</td>
-                <td>
-                  {payment.status === "Pending" && (
-                    <>
-                      <button
-                        onClick={() => {
-                          console.log(
-                            "Approve button clicked for:",
-                            payment._id
-                          );
-                          handleStatusChange(payment._id, "Approved");
-                        }}
-                        className="approve-button"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => {
-                          console.log(
-                            "Reject button clicked for:",
-                            payment._id
-                          );
-                          handleStatusChange(payment._id, "Denied");
-                        }}
-                        className="reject-button"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {payments.map((payment) => (
+    <tr key={payment._id}>
+      <td>{payment.amount}</td>
+      <td>{payment.currency}</td>
+      <td>{payment.provider}</td>
+      <td>{payment.accountHolder}</td>
+      <td>{payment.accountNumber}</td>
+      <td>{payment.reference}</td>
+      <td>{payment.swiftCode}</td>
+      <td>{payment.date}</td>
+      <td>{payment.status}</td>
+      <td>
+        {payment.status === "Pending" && (
+          <>
+            <button
+              onClick={() => handleStatusChange(payment, "Approved")} // Pass the entire payment object
+              className="approve-button"
+            >
+              Approve
+            </button>
+            <button
+              onClick={() => handleStatusChange(payment, "Denied")} // Pass the entire payment object
+              className="reject-button"
+            >
+              Reject
+            </button>
+          </>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       ) : (
         <div>No payments found</div>
