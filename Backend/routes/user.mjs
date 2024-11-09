@@ -386,7 +386,7 @@ router.get("/viewPendingPayments", async (req, res) => {
 
 
 
-
+/*
 // Route to manually add an employee
 router.post("/addEmployee", async (req, res) => {
   const { fullname, username, idNumber, accountNumber, password } = req.body;
@@ -426,7 +426,7 @@ router.post("/addEmployee", async (req, res) => {
       res.status(500).json({ message: "Failed to add employee." });
   }
 });
-
+*/
 
 
 
