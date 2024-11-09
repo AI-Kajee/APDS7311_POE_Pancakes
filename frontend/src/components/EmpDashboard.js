@@ -58,11 +58,11 @@ function EmpDashboard() {
   };
 
   const handleRedirectToViewPayments = () => {
-    navigate('/viewpayment'); // Redirect to the viewPayments page
+    navigate('/paymenthistory'); // Redirect to the viewPayments page
   };
 
   const handleRedirectToPayments = () => {
-    navigate('/payment'); // Redirect to the viewPayments page
+    navigate('/paymentportal'); // Redirect to the viewPayments page
   };
 
   return (

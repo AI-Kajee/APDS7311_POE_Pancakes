@@ -10,6 +10,8 @@ import PaymentPage from './components/PaymentPage';
 import ViewPayment from './components/ViewPayment';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import EmpDashboard from './components/EmpDashboard';
+import PaymentHistory from './components/PaymentHistory';
+import PaymentPortal from './components/PaymentPortal';
 import { AuthProvider } from './components/AuthContext';
 import './App.css';
 
@@ -30,6 +32,8 @@ function App() {
             <Route path="/viewpayment" element={<ViewPayment />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/empdashboard" element={<EmpDashboard />} />
+            <Route path="/paymenthistory" element={<PaymentHistory />} />
+            <Route path="/paymentportal" element={<PaymentPortal />} />
           </Routes>
         </div>
       </Router>
