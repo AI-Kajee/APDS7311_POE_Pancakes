@@ -442,6 +442,64 @@ router.put("/updatePaymentStatus", checkauth, async (req, res) => {
 });
 
 
+router.get("/viewAllPayments", async (req, res) => {
+  try {
+    // Fetch all payments from MongoDB (Consider adding pagination if data grows large)
+    const collection = await db.collection("payments");
+    const allPayments = await collection.find().toArray();
+
+    if (!allPayments.length) {
+      return res.status(404).send({ message: "No payments found." });
+    }
+
+    console.log("All Payments:", allPayments);
+
+    // Map payments to return safe data
+    const safeAllPayments = allPayments.map((payment) => {
+      try {
+        // Decrypt sensitive fields
+        const decryptedAccountNumber = decrypt(payment.accountNumber);
+        const decryptedSwiftCode = decrypt(payment.swiftCode);
+
+        // Return the safe data
+        return {
+          amount: payment.amount,
+          currency: payment.currency,
+          provider: payment.provider,
+          accountHolder: payment.accountHolder,
+          accountNumber: decryptedAccountNumber, // Decrypted account number
+          reference: payment.reference,
+          swiftCode: decryptedSwiftCode, // Decrypted swift code
+          date: payment.date,
+          status: payment.status, // Include status in the response
+          processedAt: payment.processedAt || null, // Include processedAt if available
+        };
+      } catch (error) {
+        console.error("Error decrypting payment data:", error);
+        // If decryption fails, return safe placeholders
+        return {
+          amount: payment.amount,
+          currency: payment.currency,
+          provider: payment.provider,
+          accountHolder: payment.accountHolder,
+          accountNumber: "Decryption Failed",
+          reference: payment.reference,
+          swiftCode: "Decryption Failed",
+          date: payment.date,
+          status: payment.status,
+          processedAt: payment.processedAt || null,
+        };
+      }
+    });
+
+    res.status(200).send(safeAllPayments);
+  } catch (error) {
+    console.error("Error fetching all payments:", error);
+    res.status(500).send({ message: "Error fetching all payments. Please try again later." });
+  }
+});
+
+
 
 
 // Route to manually add an employee

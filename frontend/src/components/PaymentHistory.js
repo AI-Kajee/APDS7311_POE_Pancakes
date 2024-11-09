@@ -18,7 +18,7 @@ const ViewPayments = () => {
       }
 
       try {
-        const response = await fetch('https://localhost:3001/user/viewPendingPayments', {
+        const response = await fetch('https://localhost:3001/user/viewAllPayments', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
