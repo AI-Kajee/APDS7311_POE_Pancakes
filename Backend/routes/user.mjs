@@ -345,6 +345,13 @@ router.get("/viewPayments", checkauth, async (req, res) => {
 
 
 
+
+
+
+
+
+
+
 // Route to manually add an employee
 router.post("/addEmployee", async (req, res) => {
   const { fullname, username, idNumber, accountNumber, password } = req.body;
