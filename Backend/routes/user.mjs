@@ -115,8 +115,8 @@ router.post("/signup", async (req, res) => {
           return res.status(400).json({ message: "Account number already exists." });
       }
 
+      //salting already included with bcrypt
       const hashedPassword = await bcrypt.hash(password, 12);
-      console.log("Hashed Password:", hashedPassword);
       let newUser = { fullName, username, idNumber, accountNumber, password: hashedPassword };
       await collection.insertOne(newUser);
 
