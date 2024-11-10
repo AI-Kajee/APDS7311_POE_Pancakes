@@ -24,7 +24,7 @@ const ViewPayments = () => {
         // Ensure only users with the 'user' role access this page
         if (decodedToken.userRole !== 'user') {
           console.log('Unauthorized access, redirecting to login');
-          navigate('/login');
+          navigate('/empdashboard');
           return;
         }
 

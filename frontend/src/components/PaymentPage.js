@@ -70,7 +70,7 @@ const PaymentPage = () => {
         const decodedToken = jwtDecode(token);
         // Verify the role from the token (e.g., only users should access the payment page)
         if (decodedToken.userRole !== 'user') {
-          navigate('/login');
+          navigate('/empdashboard');
         } else {
           // If the token is valid and role is correct, proceed
           setIsLoading(false);

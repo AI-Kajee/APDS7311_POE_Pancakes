@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PaymentHistory.css';
+import { jwtDecode } from 'jwt-decode';
 
 const ViewPayments = () => {
   const [payments, setPayments] = useState([]);
@@ -18,6 +19,14 @@ const ViewPayments = () => {
       }
 
       try {
+        const decodedToken = jwtDecode(token);
+
+        if (decodedToken.userRole !== 'employee') {
+          console.log('Unauthorized access, redirecting to login');
+          navigate('/dashboard');
+          return;
+        }
+
         const response = await fetch('https://localhost:3001/user/viewAllPayments', {
           method: 'GET',
           headers: {
