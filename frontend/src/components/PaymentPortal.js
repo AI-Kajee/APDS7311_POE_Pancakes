@@ -39,7 +39,7 @@ const ViewPayments = () => {
         setPayments(data);
       } catch (error) {
         console.error("Error fetching payments:", error);
-        setError("Failed to load payment data. Please try again later.");
+        setError("No Payments are Pending Currently. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -54,16 +54,16 @@ const ViewPayments = () => {
       setError("Failed to update payment status. Payment is undefined.");
       return;
     }
-  
+
     const { amount, date, reference } = payment; // Extract fields from payment
     const token = localStorage.getItem("token");
-  
+
     if (!token) {
       console.log("No token found, redirecting to login");
       navigate("/login");
       return;
     }
-  
+
     try {
       const response = await fetch("https://localhost:3001/user/updatePaymentStatus", {
         method: "PUT",
@@ -73,13 +73,13 @@ const ViewPayments = () => {
         },
         body: JSON.stringify({ amount, date, reference, status: newStatus }), // Send unique fields and status
       });
-  
+
       if (!response.ok) {
         const errorData = await response.text();
         console.error("Error updating payment status:", errorData);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       // Update payment status locally
       setPayments((prevPayments) =>
         prevPayments.map((p) =>
@@ -93,20 +93,17 @@ const ViewPayments = () => {
       setError("Failed to update payment status. Please try again later.");
     }
   };
-  
 
   if (isLoading) {
     return <div className="loading">Loading...</div>;
   }
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
-
   return (
     <div className="payment-portal-container">
       <h2>Your Payments</h2>
-      {payments.length > 0 ? (
+      {error ? (
+        <div className="error-message">{error}</div>
+      ) : payments.length > 0 ? (
         <table className="portal-table">
           <thead>
             <tr>
@@ -123,42 +120,43 @@ const ViewPayments = () => {
             </tr>
           </thead>
           <tbody>
-  {payments.map((payment) => (
-    <tr key={payment._id}>
-      <td>{payment.amount}</td>
-      <td>{payment.currency}</td>
-      <td>{payment.provider}</td>
-      <td>{payment.accountHolder}</td>
-      <td>{payment.accountNumber}</td>
-      <td>{payment.reference}</td>
-      <td>{payment.swiftCode}</td>
-      <td>{payment.date}</td>
-      <td>{payment.status}</td>
-      <td>
-        {payment.status === "Pending" && (
-          <>
-            <button
-              onClick={() => handleStatusChange(payment, "Approved")} // Pass the entire payment object
-              className="approve-button"
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => handleStatusChange(payment, "Denied")} // Pass the entire payment object
-              className="reject-button"
-            >
-              Reject
-            </button>
-          </>
-        )}
-      </td>
-    </tr>
-  ))}
-</tbody>
-
+            {payments.map((payment) => (
+              <tr key={payment._id}>
+                <td>{payment.amount}</td>
+                <td>{payment.currency}</td>
+                <td>{payment.provider}</td>
+                <td>{payment.accountHolder}</td>
+                <td>{payment.accountNumber}</td>
+                <td>{payment.reference}</td>
+                <td>{payment.swiftCode}</td>
+                <td>{payment.date}</td>
+                <td>{payment.status}</td>
+                <td>
+                  {payment.status === "Pending" && (
+                    <>
+                      <button
+                        onClick={() => handleStatusChange(payment, "Approved")}
+                        className="approve-button"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(payment, "Denied")}
+                        className="reject-button"
+                      >
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       ) : (
-        <div>No payments found</div>
+        <div className="no-payments-message">
+          Currently, all app payments have been checked.
+        </div>
       )}
     </div>
   );
