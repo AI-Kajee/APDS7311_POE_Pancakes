@@ -100,7 +100,7 @@ const ViewPayments = () => {
 
   return (
     <div className="payment-portal-container">
-      <h2>Your Payments</h2>
+      <h2>Payments</h2>
       {error ? (
         <div className="error-message">{error}</div>
       ) : payments.length > 0 ? (

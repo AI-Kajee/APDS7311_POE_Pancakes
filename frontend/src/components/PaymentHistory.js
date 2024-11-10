@@ -55,7 +55,7 @@ const ViewPayments = () => {
 //change what is in the table - for nehal
   return (
     <div className="payment-history-container">
-      <h2>Your Payments</h2>
+      <h2>Payments</h2>
       {payments.length > 0 ? (
         <table className="history-table">
           <thead>
