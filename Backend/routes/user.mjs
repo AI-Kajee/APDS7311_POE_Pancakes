@@ -141,7 +141,7 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
     const namePattern = /^[a-zA-Z0-9]+$/;
     const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
-    // Validate inputs
+    // Validate inputs with REGEX
     if (!namePattern.test(username)) {
         console.error("Invalid username format");
         return res.status(400).json({ message: "Invalid username." });
@@ -164,6 +164,22 @@ router.post("/login", bruteforce.prevent, async (req, res) => {
         if (/^ADU/i.test(username)) {
           const employeeCollection = db.collection("employees");
           const employee = await employeeCollection.findOne({ username });
+
+
+          // Validate inputs with REGEX
+          if (!namePattern.test(username)) {
+            console.error("Invalid username format");
+            return res.status(400).json({ message: "Invalid username." });
+          }
+          if (!namePattern.test(accountNumber)) {
+              console.error("Invalid account number format");
+              return res.status(400).json({ message: "Invalid account number." });
+          }
+          if (!passwordPattern.test(password)) {
+              console.error("Invalid password format");
+              return res.status(400).json({ message: "Invalid password." });
+          }
+
 
           if (!employee) {
               console.error("Employee not found in employees collection");
