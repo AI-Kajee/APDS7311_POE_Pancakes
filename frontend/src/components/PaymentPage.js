@@ -1,10 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Payment.css';
 import { jwtDecode } from 'jwt-decode';
+import './Payment.css';
 
 const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 const GEMINI_API_URL = process.env.REACT_APP_GEMINI_API_URL;
+
+const EXCHANGE_CONTEXT = `
+Current exact exchange rates:
+1 USD = 18.46 ZAR
+1 EUR = 18.85 ZAR
+1 USD = 0.93 EUR
+1 ZAR = 0.054 USD
+1 ZAR = 0.053 EUR
+1 EUR = 1.075 USD
+`;
 
 const PaymentPage = () => {
   const [amount, setAmount] = useState('');
@@ -20,8 +30,45 @@ const PaymentPage = () => {
   const [submitError, setSubmitError] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const validateToken = () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, redirecting to login');
+        navigate('/login');
+        return;
+      }
+  
+      try {
+        const decodedToken = jwtDecode(token);
+        if (decodedToken.userRole !== 'user') {
+          navigate('/empdashboard');
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Invalid token:', error);
+        navigate('/login');
+      }
+    };
+  
+    validateToken();
+  }, [navigate]);
+
   const getConversionFromGemini = async (amount, fromCurrency, toCurrency) => {
-    const prompt = `Convert ${amount} ${fromCurrency} to ${toCurrency}. Please provide only the numerical result without any currency symbols or additional text.`;
+    const prompt = `${EXCHANGE_CONTEXT}
+Using ONLY these exact exchange rates, convert ${amount} ${fromCurrency} to ${toCurrency}.
+Rules:
+- Use ONLY the rates provided above
+- Return ONLY the final numerical result, no currency symbols or text
+- Round to 2 decimal places
+- Show your calculation steps:
+
+Example calculation format:
+1. Start with: [amount] [fromCurrency]
+2. Use rate: [show which rate you're using]
+3. Calculate: [show your math]
+4. Final result: [number only]`;
 
     try {
       const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
@@ -44,8 +91,14 @@ const PaymentPage = () => {
 
       const data = await response.json();
       const result = data.candidates[0].content.parts[0].text;
-      const numericResult = parseFloat(result.replace(/[^\d.-]/g, ''));
-
+      
+      const numbers = result.match(/\d+\.?\d*/g);
+      if (!numbers) {
+        throw new Error('No valid number found in response');
+      }
+      const finalNumber = numbers[numbers.length - 1];
+      
+      const numericResult = parseFloat(finalNumber);
       if (isNaN(numericResult)) {
         throw new Error('Failed to parse conversion result');
       }
@@ -57,58 +110,40 @@ const PaymentPage = () => {
     }
   };
 
-  useEffect(() => {
-    const validateToken = () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('No token found, redirecting to login');
-        navigate('/login');
-        return;
-      }
+  const handleConvert = async () => {
+    if (!amount) {
+      setErrors({ ...errors, amount: 'Please enter an amount to convert' });
+      return;
+    }
   
-      try {
-        const decodedToken = jwtDecode(token);
-        // Verify the role from the token (e.g., only users should access the payment page)
-        if (decodedToken.userRole !== 'user') {
-          navigate('/empdashboard');
-        } else {
-          // If the token is valid and role is correct, proceed
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Invalid token:', error);
-        navigate('/login');
-      }
-    };
+    if (currency === 'ZAR') {
+      return; // Skip conversion if the currency is ZAR
+    }
   
-    validateToken();
-  }, [navigate]);
+    setIsConverting(true);
+    try {
+      const convertedAmount = await getConversionFromGemini(amount, 'ZAR', currency);
+      setAmount(convertedAmount);
+    } catch (error) {
+      console.error('Error during currency conversion:', error);
+      setSubmitError('Currency conversion failed. Please try again.');
+    } finally {
+      setIsConverting(false);
+    }
+  };
+  
 
   const validateForm = () => {
     let newErrors = {};
-    if (!amount) newErrors.amount = "Amount is required.";
+    if (!amount || isNaN(amount)) newErrors.amount = "Please enter a valid amount.";
     if (!accountHolder) newErrors.accountHolder = "Account holder name is required.";
     if (!accountNumber) newErrors.accountNumber = "Account number is required.";
     if (!reference) newErrors.reference = "Reference is required.";
     if (!swiftCode) newErrors.swiftCode = "SWIFT code is required.";
 
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleConvert = async () => {
-    if (currency !== 'ZAR') {
-      setIsConverting(true);
-      try {
-        const convertedAmount = await getConversionFromGemini(amount, 'ZAR', currency);
-        setAmount(convertedAmount);
-      } catch (error) {
-        console.error('Error during currency conversion:', error);
-        setSubmitError('Currency conversion failed. Please try again.');
-      } finally {
-        setIsConverting(false);
-      }
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -147,8 +182,6 @@ const PaymentPage = () => {
       });
 
       const data = await response.json();
-      console.log('Response status:', response.status);
-      console.log('Response data:', data);
 
       if (response.ok) {
         console.log('Payment details saved successfully');
@@ -165,6 +198,15 @@ const PaymentPage = () => {
       console.error('Error during payment submission:', error);
       setSubmitError('An error occurred. Please try again later.');
     }
+  };
+
+  const getDisplayRate = () => {
+    if (currency === 'USD') {
+      return '1 USD = 18.46 ZAR';
+    } else if (currency === 'EUR') {
+      return '1 EUR = 18.85 ZAR';
+    }
+    return null;
   };
 
   if (isLoading) {
@@ -187,6 +229,8 @@ const PaymentPage = () => {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 required
+                min="0"
+                step="0.01"
               />
               <button
                 type="button"
@@ -207,10 +251,17 @@ const PaymentPage = () => {
               onChange={(e) => setCurrency(e.target.value)}
               required
             >
-              <option value="ZAR">ZAR</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
+              <option value="ZAR">ZAR (South African Rand)</option>
+              <option value="USD">USD (US Dollar)</option>
+              <option value="EUR">EUR (Euro)</option>
             </select>
+
+            {currency !== 'ZAR' && (
+              <div className="exchange-info">
+                <p className="exchange-rate">{getDisplayRate()}</p>
+                <p className="rate-info">Exchange rates updated as of latest market data</p>
+              </div>
+            )}
 
             <label htmlFor="provider">Payment Provider:</label>
             <select
@@ -224,7 +275,7 @@ const PaymentPage = () => {
           </div>
           <div className="spacer"></div>
           <div className="right-column">
-            <label htmlFor="accountHolder">Enter Account Information below:</label>
+            <label className="section-header">Account Information</label>
             <label htmlFor="accountHolder">Account Holder Name:</label>
             <input
               type="text"
@@ -265,13 +316,16 @@ const PaymentPage = () => {
               placeholder="Enter SWIFT code"
               value={swiftCode}
               onChange={(e) => setSwiftCode(e.target.value)}
+              maxLength="11"
               required
             />
             {errors.swiftCode && <p className="error">{errors.swiftCode}</p>}
           </div>
         </div>
 
-        <button type="submit" className="submit-button">Submit Payment</button>
+        <button type="submit" className="submit-button">
+          Submit Payment
+        </button>
       </form>
     </div>
   );
