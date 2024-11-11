@@ -27,7 +27,7 @@
 ---
 ### Youtube Demo Final
 Click on the thumbnail below to watch our prototype run through.
-[![Watch the video](https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Black%20and%20White%20Simple%20Gaming%20YouTube%20Thumbnail.png)](https://youtu.be/-FJ6O3bWa0E)
+[![Watch the video](https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Final%20Thumbnail.png)](https://youtu.be/LNUtywMLA8o)
 
 ---
 ### Youtube Demo Part 2
