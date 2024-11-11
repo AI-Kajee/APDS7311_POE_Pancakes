@@ -26,7 +26,7 @@
 
 ---
 ### Youtube Demo Final
-Click on the thumbnail below to watch our prototype run through.
+Click on the thumbnail below to watch our run through of the final part.
 [![Watch the video](https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/Images/Final%20Thumbnail.png)](https://youtu.be/LNUtywMLA8o)
 
 ---
