@@ -80,3 +80,33 @@ let server = https.createServer(options, app);
 server.listen(PORT, () => {
     console.log(`Server is running on https://localhost:${PORT}`);
 });
+
+
+// Code Attribution
+
+// Securing APIs with express-rate-limit and express-slow-down 
+// Source: Mozilla Developer Network. (2023)
+// Reference URL: https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/
+// Accessed: 8 October 2024
+
+// Integration of Gemini AI in React
+// Author: Adurinti Ashok
+
+// Using HTTPS in React.js Development Environment
+// Article: How to Make React.js Use HTTPS in Development
+// Published by: SWLH
+
+// mongo-sanitize npm package
+// A tool to sanitize MongoDB queries and prevent injection attacks
+
+// express-brute npm package
+// Middleware for rate-limiting in Express to guard against brute-force attacks
+
+// MongoDB Update Methods Documentation
+// Reference: https://www.mongodb.com/docs/manual/reference/update-methods/
+// Provides details on MongoDB update operators and methods for handling data modifications
+
+// Building a Login/Register Application with React, Node.js, and PostgreSQL
+// Source: Codegenitor. "Building a Login/Register Application with React, Node.js, and PostgreSQL (Beginner to Advanced)"
+// Reference URL: https://codegenitor.medium.com/building-a-login-register-application-with-react-node-js-and-postgres-beginner-to-advanced-1a9fa46c7825
+
