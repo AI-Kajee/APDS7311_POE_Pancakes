@@ -40,7 +40,6 @@ By leveraging modern technologies such as **React** and adhering to best securit
 Your Data is safe with us.
 
 ---
-
 ## Features
 
 The **Atlas Trust** website for the international bank includes the following key features:
@@ -51,7 +50,11 @@ The **Atlas Trust** website for the international bank includes the following ke
 
 - **Payment Page**: The payment page allows users to send money in various currencies. Users can choose from multiple currencies and are required to enter the recipient's **SWIFT code** for international transfers, ensuring compliance with international banking standards. This feature offers a secure and flexible solution for conducting cross-border transactions.
 
-- **View Payments Page**: The user is also able to view all payments that they made on **Atlas Trust**
+- **View Payments Page**: Users can view a complete history of all payments they have made on **Atlas Trust**. This record provides transparency and easy tracking of past transactions.
+
+- **Employee Dashboard**: An employee-facing side of the platform allows authorized bank employees to manage and oversee user payments. Employees can view all payment requests made by users and are empowered to **approve or reject** these payments based on compliance and other criteria. Additionally, employees have access to a comprehensive **payment history** to review past decisions and ensure consistent and secure processing.
+
+These features together create a comprehensive banking platform, balancing user convenience with strong administrative oversight.
 
 ---
 
@@ -66,7 +69,7 @@ The **Atlas Trust** website for the international bank includes the following ke
 ### Prevention Against SQL Injection and Session Jacking
 - **Bcrypt:** Hashes passwords and sensitive info before storing in MongoDB.
 - **Mongo-Sanitize:** Prevents NoSQL injection by sanitizing user inputs.
-- **Secure Session Management:** Uses `HttpOnly` and `Secure` cookie flags.
+- **Secure Session Management:** Uses `HttpOnly` and `Secure` cookie flags to protect sessions.
 
 ### Cross-Site Scripting (XSS) and Clickjacking Protection
 - **xss-clean Middleware:** Sanitizes inputs from POST bodies, query parameters, and URLs.
@@ -78,9 +81,14 @@ The **Atlas Trust** website for the international bank includes the following ke
 ### Sensitive Data Encryption
 - **Crypto for Payment Data:** Encrypts and decrypts sensitive payment info using a secure key stored in an environment file (.env) along with the Mongo URL.
 
+### Employee Login Security
+- **Static Employee Login Credentials:** Employee access is restricted to authorized personnel with predefined usernames starting with **ADU**. Normal customers cannot create or access these usernames, preventing unauthorized access to employee features.
+- **Role-Based Access Control (RBAC):** Employees and customers have separate roles with access limitations. Employees cannot access customer pages, and customers cannot access employee pages, ensuring strict separation of privileges.
+
 For additional details, refer to our Word document: [APDS Pancakes Part 2](https://github.com/AI-Kajee/APDS7311_POE_Pancakes/blob/main/APDS_Pancakes_Part%202.docx)
 
 --- 
+
 
 
 
@@ -182,21 +190,39 @@ This project is licensed under the **MIT License**. You are free to use, modify,
 
 For more details, please refer to the [LICENSE](./LICENSE) file.
 
+
 ---
 
-## Code Attribution
 ### Attribution
 
-- The code snippet for implementing rate limiting using Express and `express-rate-limit` middleware is adapted from the Mozilla Developer Network's article on securing APIs with rate limiting.
-  - Source: Mozilla Developer Network. (2023) *Securing APIs with express-rate-limit and express-slow-down*. Available at: [https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/](https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/) (Accessed: 8 October 2024).
+- **Implementing Rate Limiting with Express**  
+  The code snippet for implementing rate limiting using Express and `express-rate-limit` middleware is adapted from Mozilla Developer Network's article on securing APIs with rate limiting.  
+  - Source: Mozilla Developer Network. (2023) *Securing APIs with express-rate-limit and express-slow-down*.  
+  - Available at: [https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/](https://developer.mozilla.org/en-US/blog/securing-apis-express-rate-limit-and-slow-down/) (Accessed: 8 October 2024).
 
-- [Integration of Gemini AI in React](https://medium.com/@codewithadurintiashok/integration-of-gemini-ai-in-react-8872025088de) by Adurinti Ashok
+- **Integration of Gemini AI in React**  
+  - Author: [Adurinti Ashok](https://medium.com/@codewithadurintiashok/integration-of-gemini-ai-in-react-8872025088de).
 
-- [How to Make React.js Use HTTPS in Development](https://medium.com/swlh/how-to-make-react-js-use-https-in-development-4ead560eff10) by SWLH
+- **How to Make React.js Use HTTPS in Development**  
+  - Article by [SWLH](https://medium.com/swlh/how-to-make-react-js-use-https-in-development-4ead560eff10).
 
-- [mongo-sanitize npm package](https://www.npmjs.com/package/mongo-sanitize) – A tool to sanitize MongoDB queries and prevent injection attacks.
+- **mongo-sanitize npm package**  
+  - A tool to sanitize MongoDB queries and prevent injection attacks.  
+  - Available at: [https://www.npmjs.com/package/mongo-sanitize](https://www.npmjs.com/package/mongo-sanitize).
 
-- [express-brute npm package](https://www.npmjs.com/package/express-brute) – A rate-limiting middleware for Express to protect against brute-force attacks.
+- **express-brute npm package**  
+  - A rate-limiting middleware for Express to protect against brute-force attacks.  
+  - Available at: [https://www.npmjs.com/package/express-brute](https://www.npmjs.com/package/express-brute).
+
+- **MongoDB Update Methods Documentation**  
+  - Reference for MongoDB update operators and methods for handling data modifications.  
+  - Available at: [https://www.mongodb.com/docs/manual/reference/update-methods/](https://www.mongodb.com/docs/manual/reference/update-methods/).
+
+- **Building a Login/Register Application with React, Node.js, and PostgreSQL (Beginner to Advanced)**  
+  - Source: Codegenitor.  
+  - Available at: [https://codegenitor.medium.com/building-a-login-register-application-with-react-node-js-and-postgres-beginner-to-advanced-1a9fa46c7825](https://codegenitor.medium.com/building-a-login-register-application-with-react-node-js-and-postgres-beginner-to-advanced-1a9fa46c7825).
+
+
 
 
 
